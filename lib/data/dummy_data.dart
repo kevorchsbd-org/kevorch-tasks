@@ -208,71 +208,107 @@ class DummyDataProvider extends ChangeNotifier {
   ];
 
   final List<NotificationItemModel> _notifications = [
+    // n1 — task_submitted: Alex Rivera submitted Dashboard UI Wireframes
     NotificationItemModel(
       id: 'n1',
-      type: 'WORK_SUBMITTED',
-      employeeName: 'Priya Sharma',
-      taskName: 'OAuth Auth Module Implementation',
-      title: 'Work Submitted',
-      message: 'Priya Sharma submitted \'OAuth Auth Module Implementation\' for review',
-      timestamp: '5 minutes ago',
-      isRead: false,
-      icon: Icons.unarchive_rounded,
-    ),
-    NotificationItemModel(
-      id: 'n2',
-      type: 'TASK_STARTED',
+      type: 'task_submitted',
       employeeName: 'Alex Rivera',
       taskName: 'Dashboard UI Wireframes',
-      title: 'Task Started',
-      message: 'Alex Rivera started working on \'Dashboard UI Wireframes\'',
-      timestamp: '18 minutes ago',
+      title: 'Task Submitted',
+      message: 'Alex Rivera submitted Dashboard UI Wireframes',
+      subTitle: 'E-Library Mobile App',
+      timestamp: '5 min ago',
+      eventDateTime: '21 Aug 2026 • 10:18 AM',
       isRead: false,
-      icon: Icons.play_circle_outline_rounded,
+      icon: Icons.unarchive_rounded,
+      relatedTaskId: 't2',
+      relatedEmployeeId: 'e2',
+      relatedProjectId: 'p4',
     ),
+    // n2 — task_assigned: Database Schema Design assigned to Michael Chen
     NotificationItemModel(
-      id: 'n3',
-      type: 'NEW_COMMENT',
-      employeeName: 'Sarah Jenkins',
-      taskName: 'IoT Telemetry Protocol Test',
-      title: 'New Comment',
-      message: 'Sarah Jenkins commented on \'IoT Telemetry Protocol Test\'',
-      timestamp: '42 minutes ago',
-      isRead: false,
-      icon: Icons.chat_bubble_outline_rounded,
-    ),
-    NotificationItemModel(
-      id: 'n4',
-      type: 'TASK_ACCEPTED',
+      id: 'n2',
+      type: 'task_assigned',
       employeeName: 'Michael Chen',
       taskName: 'Database Schema Design',
-      title: 'Task Accepted',
-      message: 'Michael Chen accepted the task \'Database Schema Design\'',
-      timestamp: '2 hours ago',
-      isRead: true,
-      icon: Icons.assignment_turned_in_outlined,
+      title: 'Task Assigned',
+      message: 'Database Schema Design was assigned to Michael Chen',
+      subTitle: 'Smart Campus Portal',
+      timestamp: '18 min ago',
+      eventDateTime: '21 Aug 2026 • 10:05 AM',
+      isRead: false,
+      icon: Icons.assignment_ind_outlined,
+      relatedTaskId: 't1',
+      relatedEmployeeId: 'e3',
+      relatedProjectId: 'p1',
     ),
+    // n3 — task_status_updated: IoT Telemetry moved to IN PROGRESS
+    NotificationItemModel(
+      id: 'n3',
+      type: 'task_status_updated',
+      employeeName: 'Sarah Jenkins',
+      taskName: 'IoT Telemetry Protocol Test',
+      title: 'Task Status Updated',
+      message: 'IoT Telemetry Protocol Test status was updated',
+      subTitle: 'IoT Lab Monitor',
+      timestamp: '42 min ago',
+      eventDateTime: '21 Aug 2026 • 09:45 AM',
+      newStatus: 'TO DO',
+      isRead: false,
+      icon: Icons.swap_horiz_rounded,
+      relatedTaskId: 't3',
+      relatedEmployeeId: 'e1',
+      relatedProjectId: 'p3',
+    ),
+    // n4 — project_created: AI Placement Predictor
+    NotificationItemModel(
+      id: 'n4',
+      type: 'project_created',
+      employeeName: 'Admin',
+      taskName: 'N/A',
+      title: 'Project Created',
+      message: 'AI Placement Predictor was created',
+      subTitle: 'NIT Trichy',
+      timestamp: '1 hour ago',
+      eventDateTime: '18 Aug 2026 • 09:00 AM',
+      isRead: false,
+      icon: Icons.create_new_folder_outlined,
+      relatedProjectId: 'p2',
+    ),
+    // n5 — task_submitted (read): Priya Sharma submitted OAuth Auth Module
     NotificationItemModel(
       id: 'n5',
-      type: 'ISSUE_REPORTED',
-      employeeName: 'David Vance',
-      taskName: 'API Latency Bottleneck',
-      title: 'Issue Reported',
-      message: 'David Vance reported an issue with \'API Latency Bottleneck\'',
-      timestamp: '3 hours ago',
+      type: 'task_submitted',
+      employeeName: 'Priya Sharma',
+      taskName: 'OAuth Auth Module Implementation',
+      title: 'Task Submitted',
+      message: 'Priya Sharma submitted OAuth Auth Module Implementation',
+      subTitle: 'Smart Campus Portal',
+      timestamp: '2 hours ago',
+      eventDateTime: '21 Aug 2026 • 08:30 AM',
       isRead: true,
-      icon: Icons.report_problem_outlined,
+      icon: Icons.unarchive_rounded,
+      relatedTaskId: 't4',
+      relatedEmployeeId: 'e4',
+      relatedProjectId: 'p1',
     ),
+    // n6 — task_status_updated (read): Database Schema Design status updated
     NotificationItemModel(
       id: 'n6',
-      type: 'TASK_COMPLETED',
-      employeeName: 'Sarah Jenkins',
-      taskName: 'Security Benchmark Protocol',
-      title: 'Task Completed',
-      message: 'Sarah Jenkins completed \'Security Benchmark Protocol\'',
-      timestamp: '1 day ago',
+      type: 'task_status_updated',
+      employeeName: 'Michael Chen',
+      taskName: 'Database Schema Design',
+      title: 'Task Status Updated',
+      message: 'Database Schema Design status was updated',
+      subTitle: 'Smart Campus Portal',
+      timestamp: '3 hours ago',
+      eventDateTime: '21 Aug 2026 • 07:55 AM',
+      newStatus: 'TO DO',
       isRead: true,
-      icon: Icons.check_circle_outline_rounded,
+      icon: Icons.swap_horiz_rounded,
+      relatedTaskId: 't1',
+      relatedEmployeeId: 'e3',
+      relatedProjectId: 'p1',
     ),
   ];
 
@@ -332,16 +368,21 @@ class DummyDataProvider extends ChangeNotifier {
 
   void addProject(ProjectModel project) {
     _projects.insert(0, project);
+    final now = DateTime.now();
+    final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
     _notifications.insert(0, NotificationItemModel(
-      id: 'n_${DateTime.now().millisecondsSinceEpoch}',
-      type: 'PROJECT_CREATED',
+      id: 'n_${now.millisecondsSinceEpoch}',
+      type: 'project_created',
       employeeName: 'Admin',
       taskName: project.projectName,
-      title: 'New Project Created',
-      message: '${project.projectName} (${project.collegeName})',
+      title: 'Project Created',
+      message: '${project.projectName} was created',
+      subTitle: project.collegeName,
       timestamp: 'Just now',
+      eventDateTime: eventDt,
       isRead: false,
       icon: Icons.create_new_folder_outlined,
+      relatedProjectId: project.id,
     ));
     notifyListeners();
   }
@@ -350,16 +391,24 @@ class DummyDataProvider extends ChangeNotifier {
     final index = _projects.indexWhere((p) => p.id == projectId);
     if (index != -1) {
       _projects[index].assignedEmployee = employeeName.trim();
+      final now = DateTime.now();
+      final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
+      // Resolve employee ID from name for relational linking
+      final emp = _employees.where((e) => e.employeeName.trim() == employeeName.trim()).firstOrNull;
       _notifications.insert(0, NotificationItemModel(
-        id: 'n_${DateTime.now().millisecondsSinceEpoch}',
-        type: 'PROJECT_ASSIGNED',
+        id: 'n_${now.millisecondsSinceEpoch}',
+        type: 'task_assigned',
         employeeName: employeeName.trim(),
         taskName: _projects[index].projectName,
         title: 'Project Lead Assigned',
         message: '$employeeName assigned to ${_projects[index].projectName}',
+        subTitle: _projects[index].projectName,
         timestamp: 'Just now',
+        eventDateTime: eventDt,
         isRead: false,
         icon: Icons.person_add_alt_1_outlined,
+        relatedProjectId: projectId,
+        relatedEmployeeId: emp?.id,
       ));
       notifyListeners();
     }
@@ -367,33 +416,65 @@ class DummyDataProvider extends ChangeNotifier {
 
   void addEmployee(EmployeeModel employee) {
     _employees.insert(0, employee);
+    final now = DateTime.now();
+    final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
     _notifications.insert(0, NotificationItemModel(
-      id: 'n_${DateTime.now().millisecondsSinceEpoch}',
-      type: 'EMPLOYEE_ADDED',
+      id: 'n_${now.millisecondsSinceEpoch}',
+      type: 'task_assigned',
       employeeName: employee.employeeName,
       taskName: 'N/A',
       title: 'New Employee Registered',
-      message: '${employee.employeeName} (${employee.role})',
+      message: '${employee.employeeName} (${employee.role}) joined the team',
+      subTitle: employee.domain,
       timestamp: 'Just now',
+      eventDateTime: eventDt,
       isRead: false,
       icon: Icons.person_outline_rounded,
+      relatedEmployeeId: employee.id,
     ));
     notifyListeners();
   }
 
   void addTask(TaskModel task) {
     _tasks.insert(0, task);
+    final now = DateTime.now();
+    final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
+    // Resolve project and employee IDs for relational linking
+    final proj = _projects.where((p) => p.projectName == task.projectType).firstOrNull;
+    final emp = _employees.where((e) => e.employeeName.trim() == task.assignedEmployee.trim()).firstOrNull;
     _notifications.insert(0, NotificationItemModel(
-      id: 'n_${DateTime.now().millisecondsSinceEpoch}',
-      type: 'TASK_CREATED',
+      id: 'n_${now.millisecondsSinceEpoch}',
+      type: 'task_assigned',
       employeeName: task.assignedEmployee,
       taskName: task.taskTitle,
-      title: 'New Task Created',
+      title: 'Task Assigned',
       message: '${task.taskTitle} assigned to ${task.assignedEmployee}',
+      subTitle: task.projectType,
       timestamp: 'Just now',
+      eventDateTime: eventDt,
       isRead: false,
       icon: Icons.add_task_outlined,
+      relatedTaskId: task.id,
+      relatedProjectId: proj?.id,
+      relatedEmployeeId: emp?.id,
     ));
     notifyListeners();
+  }
+
+  // ── Private helpers for datetime formatting ────────────────────────────────
+
+  String _monthName(int month) {
+    const months = [
+      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return months[month];
+  }
+
+  String _formatTime(DateTime dt) {
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour < 12 ? 'AM' : 'PM';
+    return '$hour:$minute $period';
   }
 }

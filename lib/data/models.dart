@@ -114,6 +114,19 @@ class NotificationItemModel {
   bool isRead;
   final IconData icon;
 
+  // Relational IDs — link to TaskModel, ProjectModel, EmployeeModel
+  final String? relatedTaskId;
+  final String? relatedProjectId;
+  final String? relatedEmployeeId;
+
+  // Short contextual subtitle (e.g. project name) shown on list card
+  final String? subTitle;
+
+  // Optional event-specific fields — only populate when real data exists
+  final String? eventDateTime;   // e.g. "21 Aug 2026 • 10:18 AM"
+  final String? previousStatus;  // Only for task_status_updated, when known
+  final String? newStatus;       // Only for task_status_updated, when known
+
   NotificationItemModel({
     required this.id,
     required this.type,
@@ -124,6 +137,13 @@ class NotificationItemModel {
     required this.timestamp,
     this.isRead = false,
     this.icon = Icons.notifications_none_rounded,
+    this.relatedTaskId,
+    this.relatedProjectId,
+    this.relatedEmployeeId,
+    this.subTitle,
+    this.eventDateTime,
+    this.previousStatus,
+    this.newStatus,
   });
 }
 

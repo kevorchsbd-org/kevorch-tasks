@@ -4,6 +4,7 @@ import '../../core/theme/app_typography.dart';
 import '../../data/dummy_data.dart';
 import '../../data/models.dart';
 import '../../core/animations/app_animations.dart';
+import 'notification_details_screen.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -61,7 +62,14 @@ class NotificationsScreen extends StatelessWidget {
                       delay: Duration(milliseconds: index * 60),
                       child: _NotificationCardItem(
                         item: item,
-                        onTap: () => data.markNotificationAsRead(item.id),
+                        onTap: () {
+                          data.markNotificationAsRead(item.id);
+                          Navigator.of(context).push(
+                            AppPageRoute.create(
+                              NotificationDetailsScreen(notification: item),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
@@ -202,6 +210,34 @@ class _NotificationCardItem extends StatelessWidget {
                       height: 1.3,
                     ),
                   ),
+                  if (item.subTitle != null && item.subTitle!.isNotEmpty) ...[
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.folder_outlined,
+                          size: 11,
+                          color: isUnread
+                              ? AppColors.primaryRed.withAlpha(180)
+                              : AppColors.lightGray,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            item.subTitle!,
+                            style: AppTypography.label.copyWith(
+                              fontSize: 11,
+                              color: isUnread
+                                  ? AppColors.primaryRed.withAlpha(200)
+                                  : AppColors.lightGray,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

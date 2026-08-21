@@ -23,6 +23,7 @@ class _FadeSlideTransitionState extends State<FadeSlideTransition>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -49,7 +50,9 @@ class _FadeSlideTransitionState extends State<FadeSlideTransition>
       _controller.forward();
     } else {
       Future.delayed(widget.delay, () {
-        if (mounted) {
+        // Guard against web DOM race: check _disposed flag before touching
+        // the controller, as mounted can be true briefly after web teardown.
+        if (!_disposed) {
           _controller.forward();
         }
       });
@@ -58,6 +61,7 @@ class _FadeSlideTransitionState extends State<FadeSlideTransition>
 
   @override
   void dispose() {
+    _disposed = true;
     _controller.dispose();
     super.dispose();
   }
