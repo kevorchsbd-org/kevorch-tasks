@@ -3,6 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/animations/app_animations.dart';
 import '../../data/dummy_data.dart';
+import '../../data/models.dart';
 import '../../widgets/primary_button.dart';
 import 'assign_employee_modal.dart';
 
@@ -300,6 +301,13 @@ class ProjectDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
+
+                      // ── Submissions (Employee TO DO history) ────────────────
+                      FadeSlideTransition(
+                        delay: const Duration(milliseconds: 400),
+                        child: _SubmissionsSection(projectId: projectId),
+                      ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -345,3 +353,305 @@ class ProjectDetailsScreen extends StatelessWidget {
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Submissions Section — Read-only view of Employee submitted TO DOs
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SubmissionsSection extends StatelessWidget {
+  final String projectId;
+  const _SubmissionsSection({required this.projectId});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: DummyDataProvider(),
+      builder: (context, _) {
+        final submissions =
+            DummyDataProvider().getSubmittedTodosByProject(projectId);
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderGray),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 10,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Submissions',
+                    style: AppTypography.cardTitle.copyWith(fontSize: 18),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: submissions.isEmpty
+                          ? AppColors.surfaceGray
+                          : const Color(0xFFDCFCE7),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: submissions.isEmpty
+                            ? AppColors.borderGray
+                            : const Color(0xFF16A34A).withAlpha(60),
+                      ),
+                    ),
+                    child: Text(
+                      '${submissions.length} submitted',
+                      style: AppTypography.label.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: submissions.isEmpty
+                            ? AppColors.mediumGray
+                            : const Color(0xFF16A34A),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (submissions.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20, horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceGray,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderGray),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.inbox_outlined,
+                          size: 20, color: AppColors.lightGray),
+                      const SizedBox(width: 10),
+                      Text(
+                        'No submissions yet',
+                        style: AppTypography.bodySecondary
+                            .copyWith(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: submissions.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final s = submissions[index];
+                    return GestureDetector(
+                      onTap: () => _showDetails(context, s),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color:
+                                const Color(0xFF16A34A).withAlpha(60),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                    Icons.check_circle_outline_rounded,
+                                    size: 15,
+                                    color: Color(0xFF16A34A)),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    s.title,
+                                    style: AppTypography.cardTitle
+                                        .copyWith(fontSize: 14),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF16A34A),
+                                    borderRadius:
+                                        BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Submitted',
+                                    style: AppTypography.label.copyWith(
+                                      fontSize: 10,
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 4,
+                              children: [
+                                if (s.studentName != null)
+                                  _MetaChip(
+                                      Icons.person_outline_rounded,
+                                      s.studentName!),
+                                if (s.submittedDateStr != null)
+                                  _MetaChip(
+                                    Icons.schedule_rounded,
+                                    '${s.submittedDateStr} • ${s.submittedTimeStr}',
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDetails(BuildContext context, EmployeeTodoModel s) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.white,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          children: [
+            const Icon(Icons.check_circle_rounded,
+                color: Color(0xFF16A34A), size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(s.title,
+                  style: AppTypography.cardTitle.copyWith(fontSize: 16)),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _DialogRow('Description', s.description),
+            if (s.studentName != null) ...[
+              const SizedBox(height: 10),
+              _DialogRow('Student', s.studentName!),
+            ],
+            if (s.note != null) ...[
+              const SizedBox(height: 10),
+              _DialogRow('Note', s.note!),
+            ],
+            const SizedBox(height: 10),
+            _DialogRow('Created',
+                '${s.createdDateStr} • ${s.createdTimeStr}'),
+            const SizedBox(height: 10),
+            _DialogRow('Submitted',
+                '${s.submittedDateStr ?? "-"} • ${s.submittedTimeStr ?? "-"}'),
+            const SizedBox(height: 6),
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEE2E2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                    color: AppColors.primaryRed.withAlpha(60)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.lock_outline_rounded,
+                      size: 13, color: AppColors.primaryRed),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Admin view only — cannot be edited',
+                    style: AppTypography.label.copyWith(
+                      fontSize: 11,
+                      color: AppColors.primaryRed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Close',
+                style: AppTypography.label.copyWith(
+                    color: AppColors.mediumGray,
+                    fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _MetaChip(this.icon, this.text);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 12, color: AppColors.mediumGray),
+        const SizedBox(width: 4),
+        Text(text,
+            style: AppTypography.label.copyWith(fontSize: 11)),
+      ],
+    );
+  }
+}
+
+class _DialogRow extends StatelessWidget {
+  final String label;
+  final String value;
+  const _DialogRow(this.label, this.value);
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        style: AppTypography.body.copyWith(fontSize: 13),
+        children: [
+          TextSpan(
+            text: '$label: ',
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: Color(0xFF111111)),
+          ),
+          TextSpan(
+            text: value,
+            style: const TextStyle(color: Color(0xFF374151)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

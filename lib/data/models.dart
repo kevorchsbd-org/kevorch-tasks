@@ -151,6 +151,78 @@ class NotificationItemModel {
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Employee TO DO Model
+// ─────────────────────────────────────────────────────────────────────────────
+
+class EmployeeTodoModel {
+  final String id;
+  final String projectId;
+  final String employeeId;
+  final String? studentId;
+
+  // Mutable while PENDING only (provider enforces lock after SUBMITTED)
+  String? studentName;
+  String title;
+  String description;
+  String? note;
+  String status; // "PENDING" | "SUBMITTED"
+
+  // Immutable creation timestamp
+  final DateTime createdAt;
+
+  // Auto-set once at submission — never manually editable
+  DateTime? submittedAt;
+
+  EmployeeTodoModel({
+    required this.id,
+    required this.projectId,
+    required this.employeeId,
+    this.studentId,
+    this.studentName,
+    required this.title,
+    required this.description,
+    this.note,
+    this.status = 'PENDING',
+    required this.createdAt,
+    this.submittedAt,
+  });
+
+  bool get isPending => status == 'PENDING';
+  bool get isSubmitted => status == 'SUBMITTED';
+
+  /// Formatted created date: "21 Aug 2026"
+  String get createdDateStr {
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${createdAt.day} ${months[createdAt.month]} ${createdAt.year}';
+  }
+
+  /// Formatted created time: "04:10 PM"
+  String get createdTimeStr => _formatTime(createdAt);
+
+  /// Formatted submitted date: "21 Aug 2026"
+  String? get submittedDateStr {
+    if (submittedAt == null) return null;
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${submittedAt!.day} ${months[submittedAt!.month]} ${submittedAt!.year}';
+  }
+
+  /// Formatted submitted time: "04:22 PM"
+  String? get submittedTimeStr {
+    if (submittedAt == null) return null;
+    return _formatTime(submittedAt!);
+  }
+
+  static String _formatTime(DateTime dt) {
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour < 12 ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+}
+
 class AdminUserModel {
   final String id;
   final String name;

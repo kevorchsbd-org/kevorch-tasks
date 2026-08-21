@@ -75,6 +75,43 @@ class DummyDataProvider extends ChangeNotifier {
     ),
   ];
 
+  // ── Employee TO DO in-memory store ──────────────────────────────────────────
+  final List<EmployeeTodoModel> _todos = [
+    // Seed: 2 PENDING, 1 SUBMITTED for p1 / e1 (Sarah Jenkins)
+    EmployeeTodoModel(
+      id: 'td1',
+      projectId: 'p1',
+      employeeId: 'e1',
+      studentName: 'Kavitha R',
+      title: 'Collect Requirements',
+      description: 'Gather detailed functional requirements from the college coordinator for the Smart Campus Portal.',
+      note: 'Schedule a meeting with Kavitha before Aug 24.',
+      status: 'PENDING',
+      createdAt: DateTime(2026, 8, 20, 10, 30),
+    ),
+    EmployeeTodoModel(
+      id: 'td2',
+      projectId: 'p1',
+      employeeId: 'e1',
+      studentName: 'Kavitha R',
+      title: 'Prepare Phase 1 Document',
+      description: 'Create the initial project scope and SRS document based on the collected requirements.',
+      status: 'SUBMITTED',
+      createdAt: DateTime(2026, 8, 18, 9, 0),
+      submittedAt: DateTime(2026, 8, 19, 16, 10),
+    ),
+    EmployeeTodoModel(
+      id: 'td3',
+      projectId: 'p1',
+      employeeId: 'e1',
+      studentName: 'Siddharth M',
+      title: 'Database Schema Review',
+      description: 'Review and validate the student enrollment database schema with the backend team.',
+      status: 'PENDING',
+      createdAt: DateTime(2026, 8, 21, 11, 15),
+    ),
+  ];
+
   final List<EmployeeModel> _employees = [
     EmployeeModel(
       id: 'e_demo',
@@ -704,6 +741,58 @@ class DummyDataProvider extends ChangeNotifier {
       ));
     }
 
+    notifyListeners();
+  }
+
+  // ── Employee TO DO Methods ──────────────────────────────────────────────────
+
+  List<EmployeeTodoModel> getTodosByProject(String projectId) =>
+      _todos.where((t) => t.projectId == projectId).toList();
+
+  List<EmployeeTodoModel> getTodosByEmployee(String employeeId) =>
+      _todos.where((t) => t.employeeId == employeeId).toList();
+
+  List<EmployeeTodoModel> getTodosByStudent(String studentId) =>
+      _todos.where((t) => t.studentId == studentId).toList();
+
+  List<EmployeeTodoModel> getSubmittedTodosByProject(String projectId) =>
+      _todos
+          .where((t) => t.projectId == projectId && t.status == 'SUBMITTED')
+          .toList();
+
+  void addEmployeeTodo(EmployeeTodoModel todo) {
+    _todos.insert(0, todo);
+    notifyListeners();
+  }
+
+  /// Update a PENDING TO DO — silently ignored if already SUBMITTED.
+  void updateEmployeeTodo({
+    required String id,
+    required String title,
+    required String description,
+    String? studentName,
+    String? note,
+  }) {
+    final matches = _todos.where((t) => t.id == id).toList();
+    if (matches.isEmpty) return; // not found
+    final todo = matches.first;
+    if (todo.status != 'PENDING') return; // provider-level lock
+    todo.title = title;
+    todo.description = description;
+    todo.studentName = studentName;
+    todo.note = note;
+    notifyListeners();
+  }
+
+  /// Submit a PENDING TO DO — auto-captures DateTime.now() as submittedAt.
+  /// Silently ignored if TO DO is missing or already SUBMITTED.
+  void submitEmployeeTodo(String id) {
+    final matches = _todos.where((t) => t.id == id).toList();
+    if (matches.isEmpty) return;
+    final todo = matches.first;
+    if (todo.status != 'PENDING') return; // provider-level guard
+    todo.status = 'SUBMITTED';
+    todo.submittedAt = DateTime.now();
     notifyListeners();
   }
 
