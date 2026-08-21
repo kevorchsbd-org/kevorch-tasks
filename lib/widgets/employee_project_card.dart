@@ -126,7 +126,9 @@ class EmployeeProjectCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      project.createdDate,
+                      project.assignedDate != null
+                          ? '${project.assignedDate!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][project.assignedDate!.month]} ${project.assignedDate!.year}'
+                          : project.createdDate,
                       style: AppTypography.bodySecondary.copyWith(
                         fontSize: 12,
                       ),

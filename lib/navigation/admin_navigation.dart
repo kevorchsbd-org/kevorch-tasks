@@ -5,6 +5,9 @@ import '../screens/projects/projects_screen.dart';
 import '../screens/employees/employees_screen.dart';
 import '../screens/tasks/tasks_screen.dart';
 
+import '../screens/profile/profile_screen.dart';
+import '../core/session/session_roles.dart';
+
 class AdminNavigation extends StatefulWidget {
   const AdminNavigation({super.key});
 
@@ -28,6 +31,7 @@ class _AdminNavigationState extends State<AdminNavigation> {
       const ProjectsScreen(),
       const EmployeesScreen(),
       const TasksScreen(),
+      const ProfileScreen(role: SessionRoles.admin),
     ];
 
     return Scaffold(

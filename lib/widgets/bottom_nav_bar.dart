@@ -19,6 +19,7 @@ class CustomBottomNavBar extends StatelessWidget {
       {'icon': Icons.folder_open_rounded, 'label': 'Projects'},
       {'icon': Icons.people_outline_rounded, 'label': 'Employees'},
       {'icon': Icons.assignment_outlined, 'label': 'Tasks'},
+      {'icon': Icons.person_outline_rounded, 'label': 'Profile'},
     ];
 
     return Container(
@@ -41,7 +42,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primaryRedLight.withAlpha(128)

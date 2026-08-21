@@ -99,6 +99,8 @@ class _EmployeeTodoDetailsScreenState extends State<EmployeeTodoDetailsScreen> {
           (t) => t.id == widget.todo.id,
           orElse: () => widget.todo,
         );
+        final project = provider.getProjectById(widget.todo.projectId);
+        final isProjectCompleted = project?.status == ProjectStatus.completed;
 
         return Scaffold(
           backgroundColor: AppColors.white,
@@ -114,7 +116,7 @@ class _EmployeeTodoDetailsScreenState extends State<EmployeeTodoDetailsScreen> {
               style: AppTypography.sectionTitle.copyWith(fontSize: 18),
             ),
             actions: [
-              if (live.isPending)
+              if (live.isPending && !isProjectCompleted)
                 TextButton.icon(
                   onPressed: _onEditTap,
                   icon: const Icon(Icons.edit_outlined,
@@ -277,7 +279,7 @@ class _EmployeeTodoDetailsScreenState extends State<EmployeeTodoDetailsScreen> {
                 const SizedBox(height: 28),
 
                 // ── Submit Button (PENDING only) ──────────────────────────────
-                if (live.isPending)
+                if (live.isPending && !isProjectCompleted)
                   FadeSlideTransition(
                     delay: const Duration(milliseconds: 200),
                     child: _submitted

@@ -27,7 +27,6 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
 
   final List<String> _statusFilters = [
     'All',
-    'TO DO',
     'IN PROGRESS',
     'REVIEW',
     'REWORK',

@@ -1,5 +1,38 @@
 import 'package:flutter/material.dart';
 
+class ProjectStatus {
+  static const String assigned = 'ASSIGNED';
+  static const String inProgress = 'IN PROGRESS';
+  static const String phase1Review = 'PHASE 1 REVIEW';
+  static const String rework = 'REWORK';
+  static const String testing = 'TESTING';
+  static const String closure = 'CLOSURE';
+  static const String completed = 'COMPLETED';
+
+  static const List<String> all = [
+    assigned,
+    inProgress,
+    phase1Review,
+    rework,
+    testing,
+    closure,
+    completed,
+  ];
+
+  static String getLabel(String status) {
+    switch (status.toUpperCase()) {
+      case assigned: return 'Assigned';
+      case inProgress: return 'In Progress';
+      case phase1Review: return 'Phase 1 Review';
+      case rework: return 'Rework';
+      case testing: return 'Testing';
+      case closure: return 'Closure';
+      case completed: return 'Completed';
+      default: return status;
+    }
+  }
+}
+
 class ProjectModel {
   final String id;
   final String projectName;
@@ -8,6 +41,11 @@ class ProjectModel {
   final String domain;
   final String createdDate;
   String? assignedEmployee;
+  String status;
+  DateTime? assignedDate;
+  DateTime? completedAt;
+  String currentTimelineStage;
+  DateTime? closureRequestedAt;
 
   ProjectModel({
     required this.id,
@@ -17,6 +55,11 @@ class ProjectModel {
     required this.domain,
     required this.createdDate,
     this.assignedEmployee,
+    this.status = ProjectStatus.assigned,
+    this.assignedDate,
+    this.completedAt,
+    this.currentTimelineStage = 'Project Assigned',
+    this.closureRequestedAt,
   });
 
   bool get isAssigned => assignedEmployee != null && assignedEmployee!.trim().isNotEmpty;
@@ -167,6 +210,7 @@ class EmployeeTodoModel {
   String description;
   String? note;
   String status; // "PENDING" | "SUBMITTED"
+  bool isRequired;
 
   // Immutable creation timestamp
   final DateTime createdAt;
@@ -184,6 +228,7 @@ class EmployeeTodoModel {
     required this.description,
     this.note,
     this.status = 'PENDING',
+    this.isRequired = true,
     required this.createdAt,
     this.submittedAt,
   });
@@ -251,5 +296,79 @@ class AdminUserModel {
     }
     return 'AD';
   }
+}
+
+class StudentSubmissionModel {
+  final String id;
+  final String projectId;
+  final String employeeId;
+  String studentName;
+  String registerNumber;
+  String department;
+  String college;
+  String? email;
+  String? phone;
+  String? notes;
+  String? documentName;
+  String? documentPath;
+  String? documentType;
+  String? documentSize;
+  String status; // "DRAFT" | "SUBMITTED"
+  bool isRequired;
+  final DateTime createdAt;
+  DateTime? submittedAt;
+
+  StudentSubmissionModel({
+    required this.id,
+    required this.projectId,
+    required this.employeeId,
+    required this.studentName,
+    required this.registerNumber,
+    required this.department,
+    required this.college,
+    this.email,
+    this.phone,
+    this.notes,
+    this.documentName,
+    this.documentPath,
+    this.documentType,
+    this.documentSize,
+    this.status = 'DRAFT',
+    this.isRequired = true,
+    required this.createdAt,
+    this.submittedAt,
+  });
+}
+
+class StudentProcessModel {
+  final String id;
+  final String projectId;
+  final String employeeId;
+  final String? studentId;
+  final String studentName;
+  String title;
+  String description;
+  String? note;
+  String? referenceDocumentName;
+  String status; // "DRAFT" | "SUBMITTED"
+  bool isRequired;
+  final DateTime createdAt;
+  DateTime? submittedAt;
+
+  StudentProcessModel({
+    required this.id,
+    required this.projectId,
+    required this.employeeId,
+    this.studentId,
+    required this.studentName,
+    required this.title,
+    required this.description,
+    this.note,
+    this.referenceDocumentName,
+    this.status = 'DRAFT',
+    this.isRequired = true,
+    required this.createdAt,
+    this.submittedAt,
+  });
 }
 

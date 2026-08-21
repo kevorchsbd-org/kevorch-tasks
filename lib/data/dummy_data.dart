@@ -15,6 +15,8 @@ class DummyDataProvider extends ChangeNotifier {
       domain: 'Web Development',
       createdDate: '20 August 2026',
       assignedEmployee: 'Employee',
+      status: ProjectStatus.phase1Review,
+      assignedDate: DateTime(2026, 8, 20),
     ),
     ProjectModel(
       id: 'p2',
@@ -24,6 +26,8 @@ class DummyDataProvider extends ChangeNotifier {
       domain: 'Artificial Intelligence',
       createdDate: '18 August 2026',
       assignedEmployee: 'Employee',
+      status: ProjectStatus.inProgress,
+      assignedDate: DateTime(2026, 8, 18),
     ),
     ProjectModel(
       id: 'p3',
@@ -33,6 +37,8 @@ class DummyDataProvider extends ChangeNotifier {
       domain: 'Internet of Things',
       createdDate: '15 August 2026',
       assignedEmployee: 'Michael Chen',
+      status: ProjectStatus.inProgress,
+      assignedDate: DateTime(2026, 8, 15),
     ),
     ProjectModel(
       id: 'p4',
@@ -42,6 +48,8 @@ class DummyDataProvider extends ChangeNotifier {
       domain: 'Mobile App',
       createdDate: '10 August 2026',
       assignedEmployee: 'Alex Rivera',
+      status: ProjectStatus.completed,
+      assignedDate: DateTime(2026, 8, 10),
     ),
   ];
 
@@ -72,6 +80,47 @@ class DummyDataProvider extends ChangeNotifier {
       accessScope: 'Monitoring & System Metrics',
       createdDate: '10 July 2026',
       isActive: true,
+    ),
+  ];
+
+  // ── Student Submissions in-memory store ─────────────────────────────────────
+  final List<StudentSubmissionModel> _studentSubmissions = [
+    StudentSubmissionModel(
+      id: 'sub1',
+      projectId: 'p1',
+      employeeId: 'e_demo',
+      studentName: 'Aishwarya R',
+      registerNumber: '2026CSE001',
+      department: 'Computer Science',
+      college: 'IIT Madras',
+      email: 'aishwarya@iitm.ac.in',
+      phone: '9876543210',
+      notes: 'Excellent candidate, project milestone completed.',
+      documentName: 'report.pdf',
+      documentPath: '/simulated/documents/report.pdf',
+      documentType: 'PDF',
+      documentSize: '1.2 MB',
+      status: 'SUBMITTED',
+      createdAt: DateTime(2026, 8, 20, 14, 0),
+      submittedAt: DateTime(2026, 8, 20, 16, 30),
+    ),
+    StudentSubmissionModel(
+      id: 'sub2',
+      projectId: 'p1',
+      employeeId: 'e_demo',
+      studentName: 'Bharat S',
+      registerNumber: '2026CSE005',
+      department: 'Information Technology',
+      college: 'IIT Madras',
+      email: 'bharat@iitm.ac.in',
+      phone: '8765432109',
+      notes: 'Drafting initial proposal.',
+      documentName: 'proposal.docx',
+      documentPath: '/simulated/documents/proposal.docx',
+      documentType: 'DOCX',
+      documentSize: '640 KB',
+      status: 'DRAFT',
+      createdAt: DateTime(2026, 8, 21, 10, 15),
     ),
   ];
 
@@ -447,6 +496,7 @@ class DummyDataProvider extends ChangeNotifier {
   List<TaskModel> get tasks => List.unmodifiable(_tasks);
   List<AdminUserModel> get adminUsers => List.unmodifiable(_adminUsers);
   List<NotificationItemModel> get notifications => List.unmodifiable(_notifications.where((n) => n.targetEmployeeId == null).toList());
+  List<StudentSubmissionModel> get studentSubmissions => List.unmodifiable(_studentSubmissions);
 
   bool get hasUnreadNotifications => _notifications.any((n) => n.targetEmployeeId == null && !n.isRead);
 
@@ -626,6 +676,9 @@ class DummyDataProvider extends ChangeNotifier {
     final index = _projects.indexWhere((p) => p.id == projectId);
     if (index != -1) {
       _projects[index].assignedEmployee = employeeName.trim();
+      _projects[index].status = ProjectStatus.assigned;
+      _projects[index].assignedDate = DateTime.now();
+      
       final now = DateTime.now();
       final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
       final emp = _employees.where((e) => e.employeeName.trim() == employeeName.trim()).firstOrNull;
@@ -669,6 +722,17 @@ class DummyDataProvider extends ChangeNotifier {
       }
 
       notifyListeners();
+    }
+  }
+
+  void updateProjectStatus(String projectId, String newStatus) {
+    final index = _projects.indexWhere((p) => p.id == projectId);
+    if (index != -1) {
+      final upperStatus = newStatus.toUpperCase();
+      if (ProjectStatus.all.contains(upperStatus)) {
+        _projects[index].status = upperStatus;
+        notifyListeners();
+      }
     }
   }
 
@@ -761,6 +825,9 @@ class DummyDataProvider extends ChangeNotifier {
           .toList();
 
   void addEmployeeTodo(EmployeeTodoModel todo) {
+    final project = getProjectById(todo.projectId);
+    if (project?.status == ProjectStatus.completed) return;
+
     _todos.insert(0, todo);
     notifyListeners();
   }
@@ -777,6 +844,9 @@ class DummyDataProvider extends ChangeNotifier {
     if (matches.isEmpty) return; // not found
     final todo = matches.first;
     if (todo.status != 'PENDING') return; // provider-level lock
+    final project = getProjectById(todo.projectId);
+    if (project?.status == ProjectStatus.completed) return;
+
     todo.title = title;
     todo.description = description;
     todo.studentName = studentName;
@@ -791,9 +861,382 @@ class DummyDataProvider extends ChangeNotifier {
     if (matches.isEmpty) return;
     final todo = matches.first;
     if (todo.status != 'PENDING') return; // provider-level guard
+    final project = getProjectById(todo.projectId);
+    if (project?.status == ProjectStatus.completed) return;
+
     todo.status = 'SUBMITTED';
     todo.submittedAt = DateTime.now();
     notifyListeners();
+    evaluateProjectMilestones(todo.projectId);
+  }
+
+  // ── Student Submissions Methods ─────────────────────────────────────────────
+
+  void addStudentSubmission(StudentSubmissionModel submission) {
+    final project = getProjectById(submission.projectId);
+    if (project?.status == ProjectStatus.completed) return;
+
+    _studentSubmissions.insert(0, submission);
+    notifyListeners();
+    evaluateProjectMilestones(submission.projectId);
+  }
+
+  void updateStudentSubmission(StudentSubmissionModel submission) {
+    final index = _studentSubmissions.indexWhere((s) => s.id == submission.id);
+    if (index != -1) {
+      final target = _studentSubmissions[index];
+      if (target.status == 'SUBMITTED') return; // Strict lock
+      final project = getProjectById(target.projectId);
+      if (project?.status == ProjectStatus.completed) return;
+      
+      target.studentName = submission.studentName;
+      target.registerNumber = submission.registerNumber;
+      target.department = submission.department;
+      target.college = submission.college;
+      target.email = submission.email;
+      target.phone = submission.phone;
+      target.notes = submission.notes;
+      target.documentName = submission.documentName;
+      target.documentPath = submission.documentPath;
+      target.documentType = submission.documentType;
+      target.documentSize = submission.documentSize;
+      target.isRequired = submission.isRequired;
+      
+      notifyListeners();
+    }
+  }
+
+  void attachDocumentToSubmission(String id, String name, String path, String type, String size) {
+    final index = _studentSubmissions.indexWhere((s) => s.id == id);
+    if (index != -1) {
+      final target = _studentSubmissions[index];
+      if (target.status == 'SUBMITTED') return; // Strict lock
+      final project = getProjectById(target.projectId);
+      if (project?.status == ProjectStatus.completed) return;
+      
+      target.documentName = name;
+      target.documentPath = path;
+      target.documentType = type;
+      target.documentSize = size;
+      
+      notifyListeners();
+    }
+  }
+
+  void removeDraftSubmissionDocument(String id) {
+    final index = _studentSubmissions.indexWhere((s) => s.id == id);
+    if (index != -1) {
+      final target = _studentSubmissions[index];
+      if (target.status == 'SUBMITTED') return; // Strict lock
+      final project = getProjectById(target.projectId);
+      if (project?.status == ProjectStatus.completed) return;
+      
+      target.documentName = null;
+      target.documentPath = null;
+      target.documentType = null;
+      target.documentSize = null;
+      
+      notifyListeners();
+    }
+  }
+
+  void submitStudentSubmission(String id) {
+    final index = _studentSubmissions.indexWhere((s) => s.id == id);
+    if (index != -1) {
+      final sub = _studentSubmissions[index];
+      if (sub.status == 'SUBMITTED') return; // Strict lock
+      final project = getProjectById(sub.projectId);
+      if (project?.status == ProjectStatus.completed) return;
+      
+      // Validation
+      if (sub.studentName.trim().isEmpty ||
+          sub.registerNumber.trim().isEmpty ||
+          sub.department.trim().isEmpty ||
+          sub.college.trim().isEmpty ||
+          sub.documentName == null) {
+        return;
+      }
+      
+      sub.status = 'SUBMITTED';
+      sub.submittedAt = DateTime.now();
+      notifyListeners();
+      evaluateProjectMilestones(sub.projectId);
+    }
+  }
+
+  List<StudentSubmissionModel> getStudentSubmissionsByProject(String projectId) {
+    return _studentSubmissions.where((s) => s.projectId == projectId).toList();
+  }
+
+  List<StudentSubmissionModel> getStudentSubmissionsByEmployee(String employeeId) {
+    return _studentSubmissions.where((s) => s.employeeId == employeeId).toList();
+  }
+
+  List<StudentSubmissionModel> getSubmittedStudentSubmissionsByProject(String projectId) {
+    return _studentSubmissions.where((s) => s.projectId == projectId && s.status == 'SUBMITTED').toList();
+  }
+
+  List<StudentSubmissionModel> getAllSubmittedStudentSubmissions() {
+    return _studentSubmissions.where((s) => s.status == 'SUBMITTED').toList();
+  }
+
+  // ── Student Processes in-memory store ──────────────────────────────────────────
+  final List<StudentProcessModel> _studentProcesses = [
+    StudentProcessModel(
+      id: 'sp1',
+      projectId: 'p1',
+      employeeId: 'e_demo',
+      studentId: '2026CSE001',
+      studentName: 'Aishwarya R',
+      title: 'Initial Database Schema Design',
+      description: 'Drafted the structure for core academic tables including tables for students, enrollment and course registration.',
+      note: 'Need to refine indexes for query optimization.',
+      status: 'SUBMITTED',
+      isRequired: true,
+      createdAt: DateTime(2026, 8, 20, 10, 0),
+      submittedAt: DateTime(2026, 8, 20, 11, 30),
+    ),
+    StudentProcessModel(
+      id: 'sp2',
+      projectId: 'p1',
+      employeeId: 'e_demo',
+      studentId: '2026CSE001',
+      studentName: 'Aishwarya R',
+      title: 'Authentication Module Integration',
+      description: 'Configuring custom router hooks for token-based employee login.',
+      status: 'DRAFT',
+      isRequired: true,
+      createdAt: DateTime(2026, 8, 21, 9, 15),
+    ),
+  ];
+
+  List<StudentProcessModel> get studentProcesses => List.unmodifiable(_studentProcesses);
+
+  void addStudentProcess(StudentProcessModel process) {
+    final project = getProjectById(process.projectId);
+    if (project?.status == ProjectStatus.completed) return; // Project completed lock
+
+    _studentProcesses.insert(0, process);
+    notifyListeners();
+    evaluateProjectMilestones(process.projectId);
+  }
+
+  void updateStudentProcess(StudentProcessModel process) {
+    final index = _studentProcesses.indexWhere((p) => p.id == process.id);
+    if (index != -1) {
+      final p = _studentProcesses[index];
+      if (p.status == 'SUBMITTED') return; // Immutable submission lock
+      final project = getProjectById(p.projectId);
+      if (project?.status == ProjectStatus.completed) return; // Project completed lock
+
+      p.title = process.title;
+      p.description = process.description;
+      p.note = process.note;
+      p.referenceDocumentName = process.referenceDocumentName;
+      p.isRequired = process.isRequired;
+      notifyListeners();
+    }
+  }
+
+  void submitStudentProcess(String id) {
+    final index = _studentProcesses.indexWhere((p) => p.id == id);
+    if (index != -1) {
+      final p = _studentProcesses[index];
+      if (p.status == 'SUBMITTED') return; // Immutable submission lock
+      final project = getProjectById(p.projectId);
+      if (project?.status == ProjectStatus.completed) return; // Project completed lock
+      if (p.title.trim().isEmpty || p.description.trim().isEmpty) return;
+
+      p.status = 'SUBMITTED';
+      p.submittedAt = DateTime.now();
+      notifyListeners();
+      evaluateProjectMilestones(p.projectId);
+    }
+  }
+
+  List<StudentProcessModel> getProcessesByProject(String projectId) {
+    return _studentProcesses.where((p) => p.projectId == projectId).toList();
+  }
+
+  List<StudentProcessModel> getProcessesByStudent(String studentId) {
+    return _studentProcesses.where((p) => p.studentId == studentId).toList();
+  }
+
+  List<StudentProcessModel> getProcessesByEmployee(String employeeId) {
+    return _studentProcesses.where((p) => p.employeeId == employeeId).toList();
+  }
+
+  List<StudentProcessModel> getSubmittedProcessesByProject(String projectId) {
+    return _studentProcesses.where((p) => p.projectId == projectId && p.status == 'SUBMITTED').toList();
+  }
+
+  List<StudentProcessModel> getAllSubmittedStudentProcesses() {
+    return _studentProcesses.where((p) => p.status == 'SUBMITTED').toList();
+  }
+
+  // ── Central Timeline & Closure helper methods ───────────────────────────────
+
+  String deriveProjectStatus(String timelineStage) {
+    switch (timelineStage) {
+      case 'Project Assigned':
+      case 'Student Added':
+        return ProjectStatus.assigned;
+      case 'Initial Process':
+      case 'Student Work':
+        return ProjectStatus.inProgress;
+      case 'Phase 1 Review':
+        return ProjectStatus.phase1Review;
+      case 'Rework':
+        return ProjectStatus.rework;
+      case 'Testing':
+        return ProjectStatus.testing;
+      case 'Project Closure':
+        return ProjectStatus.closure;
+      case 'Completed':
+        return ProjectStatus.completed;
+      default:
+        return ProjectStatus.assigned;
+    }
+  }
+
+  void setProjectTimelineStage(String projectId, String newStage) {
+    final project = getProjectById(projectId);
+    if (project == null) return;
+    if (project.status == ProjectStatus.completed) return; // locked
+
+    project.currentTimelineStage = newStage;
+    project.status = deriveProjectStatus(newStage);
+    if (newStage == 'Completed') {
+      project.completedAt = DateTime.now();
+    }
+    notifyListeners();
+  }
+
+  void evaluateProjectMilestones(String projectId) {
+    final project = getProjectById(projectId);
+    if (project == null || project.status == ProjectStatus.completed) return;
+
+    final currentStage = project.currentTimelineStage;
+    final stages = [
+      "Project Assigned",
+      "Student Added",
+      "Initial Process",
+      "Student Work",
+      "Phase 1 Review",
+      "Rework",
+      "Testing",
+      "Project Closure",
+      "Completed"
+    ];
+
+    int currentIndex = stages.indexOf(currentStage);
+    if (currentIndex == -1) currentIndex = 0;
+
+    int newIndex = currentIndex;
+
+    // Condition 1: At least one student registry exists
+    final submissions = getStudentSubmissionsByProject(projectId);
+    if (submissions.isNotEmpty && newIndex < 1) {
+      newIndex = 1; // Student Added
+    }
+
+    // Condition 2: At least one submitted process exists
+    final submittedProcesses = getSubmittedProcessesByProject(projectId);
+    if (submittedProcesses.isNotEmpty && newIndex < 2) {
+      newIndex = 2; // Initial Process
+    }
+
+    // Condition 3: At least 2 submitted processes exist
+    if (submittedProcesses.length >= 2 && newIndex < 3) {
+      newIndex = 3; // Student Work
+    }
+
+    // Condition 4: At least 1 submitted student submission exists
+    final submittedSubmissions = getSubmittedStudentSubmissionsByProject(projectId);
+    if (submittedSubmissions.isNotEmpty && newIndex < 4) {
+      newIndex = 4; // Phase 1 Review
+    }
+
+    // Auto-advance only if the index increased and is within the auto-advance range (<= 4, i.e. up to Phase 1 Review)
+    if (newIndex > currentIndex && newIndex <= 4) {
+      setProjectTimelineStage(projectId, stages[newIndex]);
+    }
+  }
+
+  Map<String, dynamic> validateProjectClosure(String projectId) {
+    final project = getProjectById(projectId);
+    final List<String> incompleteItems = [];
+
+    if (project == null) {
+      return {
+        'isValid': false,
+        'incompleteItems': ['Project not found.']
+      };
+    }
+
+    // 1. Required TO DOs: No required EmployeeTodoModel remains PENDING
+    final projectTodos = _todos.where((t) => t.projectId == projectId).toList();
+    for (var todo in projectTodos) {
+      if (todo.isRequired && todo.status == 'PENDING') {
+        incompleteItems.add('Required TO DO: "${todo.title}" is still pending.');
+      }
+    }
+
+    // 2. Required Processes: No required StudentProcessModel remains DRAFT
+    final projectProcesses = getProcessesByProject(projectId);
+    for (var process in projectProcesses) {
+      if (process.isRequired && process.status == 'DRAFT') {
+        incompleteItems.add('Required Process: "${process.title}" is still a draft.');
+      }
+    }
+
+    // 3. Required Student Submissions: No required StudentSubmissionModel remains DRAFT
+    final projectSubmissions = getStudentSubmissionsByProject(projectId);
+    for (var sub in projectSubmissions) {
+      if (sub.isRequired && sub.status == 'DRAFT') {
+        incompleteItems.add('Required Submission: Student "${sub.studentName}" is in draft.');
+      }
+    }
+
+    // 4. Mandatory Milestones: Project must be in Project Closure stage
+    final stages = [
+      "Project Assigned",
+      "Student Added",
+      "Initial Process",
+      "Student Work",
+      "Phase 1 Review",
+      "Rework",
+      "Testing",
+      "Project Closure",
+      "Completed"
+    ];
+    int stageIndex = stages.indexOf(project.currentTimelineStage);
+    if (stageIndex < 7) {
+      incompleteItems.add('Project has not reached the "Project Closure" milestone.');
+    }
+
+    return {
+      'isValid': incompleteItems.isEmpty,
+      'incompleteItems': incompleteItems,
+    };
+  }
+
+  void requestProjectClosure(String projectId) {
+    final validation = validateProjectClosure(projectId);
+    if (validation['isValid'] == true) {
+      final project = getProjectById(projectId);
+      if (project != null) {
+        project.closureRequestedAt = DateTime.now();
+        notifyListeners();
+      }
+    }
+  }
+
+  void confirmProjectClosure(String projectId) {
+    final validation = validateProjectClosure(projectId);
+    if (validation['isValid'] == true) {
+      setProjectTimelineStage(projectId, 'Completed');
+    }
   }
 
   // ── Private helpers for datetime formatting ────────────────────────────────

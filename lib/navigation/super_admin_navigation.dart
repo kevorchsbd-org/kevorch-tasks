@@ -6,6 +6,9 @@ import '../screens/projects/projects_screen.dart';
 import '../screens/employees/employees_screen.dart';
 import '../screens/tasks/tasks_screen.dart';
 
+import '../screens/profile/profile_screen.dart';
+import '../core/session/session_roles.dart';
+
 class SuperAdminNavigation extends StatefulWidget {
   const SuperAdminNavigation({super.key});
 
@@ -30,6 +33,7 @@ class _SuperAdminNavigationState extends State<SuperAdminNavigation> {
       const ProjectsScreen(),
       const EmployeesScreen(),
       const TasksScreen(),
+      const ProfileScreen(role: SessionRoles.superAdmin),
     ];
 
     return Scaffold(

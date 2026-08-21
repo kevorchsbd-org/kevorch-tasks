@@ -6,6 +6,8 @@ import '../../data/dummy_data.dart';
 import '../../navigation/employee_navigation.dart';
 import '../../widgets/summary_card.dart';
 import '../../widgets/success_state_dialog.dart';
+import '../../widgets/student_submission_read_only_view.dart';
+import '../../data/models.dart';
 import '../monitoring/monitoring_screen.dart';
 
 class SuperAdminDashboardScreen extends StatelessWidget {
@@ -366,6 +368,59 @@ class SuperAdminDashboardScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 28),
+
+                  // 5. Recent Student Submissions
+                  FadeSlideTransition(
+                    delay: const Duration(milliseconds: 250),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Recent Student Submissions",
+                          style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                        ),
+                        const SizedBox(height: 12),
+                        _SuperAdminSubmissionsList(),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // 6. Recent Student Processes
+                  FadeSlideTransition(
+                    delay: const Duration(milliseconds: 300),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Recent Student Process Updates",
+                          style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                        ),
+                        const SizedBox(height: 12),
+                        _SuperAdminProcessesList(),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // 7. Project Progress Summary
+                  FadeSlideTransition(
+                    delay: const Duration(milliseconds: 350),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Project Timelines & Stages",
+                          style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                        ),
+                        const SizedBox(height: 12),
+                        _SuperAdminProjectsProgressList(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -426,6 +481,338 @@ class SuperAdminDashboardScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SuperAdminSubmissionsList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final provider = DummyDataProvider();
+    final submissions = provider.getAllSubmittedStudentSubmissions();
+
+    // sort by submittedAt descending
+    submissions.sort((a, b) {
+      if (a.submittedAt == null && b.submittedAt == null) return 0;
+      if (a.submittedAt == null) return 1;
+      if (b.submittedAt == null) return -1;
+      return b.submittedAt!.compareTo(a.submittedAt!);
+    });
+
+    // limit to 5
+    final displayList = submissions.take(5).toList();
+
+    if (displayList.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceGray,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderGray),
+        ),
+        child: Center(
+          child: Text(
+            "No recent student submissions",
+            style: AppTypography.bodySecondary,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: displayList.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final s = displayList[index];
+        final empName = provider.getEmployeeById(s.employeeId)?.employeeName ?? 'Unknown Employee';
+        final projName = provider.getProjectById(s.projectId)?.projectName ?? 'Unknown Project';
+
+        final submittedDateStr = s.submittedAt != null
+            ? '${s.submittedAt!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][s.submittedAt!.month]} ${s.submittedAt!.year}'
+            : 'N/A';
+
+        return GestureDetector(
+          onTap: () => StudentSubmissionReadOnlyView.show(context, s),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.borderGray),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.cardShadow,
+                  blurRadius: 6,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFDCFCE7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        s.studentName,
+                        style: AppTypography.cardTitle.copyWith(fontSize: 14),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Project: $projName • By: $empName',
+                        style: AppTypography.bodySecondary.copyWith(fontSize: 11.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Submitted: $submittedDateStr',
+                        style: AppTypography.bodySecondary.copyWith(fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.mediumGray, size: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SuperAdminProcessesList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final provider = DummyDataProvider();
+    final processes = provider.getAllSubmittedStudentProcesses()
+        .where((p) => p.status == 'SUBMITTED')
+        .toList();
+
+    // sort by submittedAt descending
+    processes.sort((a, b) {
+      if (a.submittedAt == null && b.submittedAt == null) return 0;
+      if (a.submittedAt == null) return 1;
+      if (b.submittedAt == null) return -1;
+      return b.submittedAt!.compareTo(a.submittedAt!);
+    });
+
+    // limit to 5
+    final displayList = processes.take(5).toList();
+
+    if (displayList.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceGray,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderGray),
+        ),
+        child: Center(
+          child: Text(
+            "No recent student processes submitted",
+            style: AppTypography.bodySecondary,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: displayList.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final p = displayList[index];
+        final empName = provider.getEmployeeById(p.employeeId)?.employeeName ?? 'Unknown Employee';
+        final projName = provider.getProjectById(p.projectId)?.projectName ?? 'Unknown Project';
+
+        final submittedDateStr = p.submittedAt != null
+            ? '${p.submittedAt!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][p.submittedAt!.month]} ${p.submittedAt!.year}'
+            : 'N/A';
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderGray),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEFF6FF),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.rocket_launch_rounded, color: Color(0xFF2563EB), size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      p.title,
+                      style: AppTypography.cardTitle.copyWith(fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Student: ${p.studentName} • Project: $projName • Lead: $empName',
+                      style: AppTypography.bodySecondary.copyWith(fontSize: 11.5),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Logged: $submittedDateStr',
+                      style: AppTypography.bodySecondary.copyWith(fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SuperAdminProjectsProgressList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final provider = DummyDataProvider();
+    final projects = provider.projects;
+
+    // limit to 5
+    final displayList = projects.take(5).toList();
+
+    if (displayList.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceGray,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderGray),
+        ),
+        child: Center(
+          child: Text(
+            "No projects found",
+            style: AppTypography.bodySecondary,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: displayList.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final proj = displayList[index];
+        
+        // Derive color for the status
+        Color statusColor = const Color(0xFFFEF3C7);
+        Color textColor = const Color(0xFFD97706);
+        if (proj.status == ProjectStatus.completed) {
+          statusColor = const Color(0xFFDCFCE7);
+          textColor = const Color(0xFF16A34A);
+        } else if (proj.status == ProjectStatus.assigned) {
+          statusColor = const Color(0xFFEFF6FF);
+          textColor = const Color(0xFF2563EB);
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderGray),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      proj.projectName,
+                      style: AppTypography.cardTitle.copyWith(fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.linear_scale_rounded, size: 13, color: AppColors.mediumGray),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            'Stage: ${proj.currentTimelineStage}',
+                            style: AppTypography.bodySecondary.copyWith(fontSize: 12),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  ProjectStatus.getLabel(proj.status),
+                  style: AppTypography.label.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

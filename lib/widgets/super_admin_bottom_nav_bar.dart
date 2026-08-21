@@ -20,6 +20,7 @@ class SuperAdminBottomNavBar extends StatelessWidget {
       {'icon': Icons.folder_open_rounded, 'label': 'Projects'},
       {'icon': Icons.people_outline_rounded, 'label': 'Employees'},
       {'icon': Icons.assignment_outlined, 'label': 'Tasks'},
+      {'icon': Icons.person_outline_rounded, 'label': 'Profile'},
     ];
 
     return Container(
@@ -42,7 +43,7 @@ class SuperAdminBottomNavBar extends StatelessWidget {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 6),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primaryRedLight.withAlpha(128)
@@ -61,7 +62,7 @@ class SuperAdminBottomNavBar extends StatelessWidget {
                       Text(
                         item['label'] as String,
                         style: AppTypography.navigation.copyWith(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
                         ),

@@ -5,6 +5,9 @@ import '../screens/employee/employee_dashboard_screen.dart';
 import '../screens/employee/employee_projects_screen.dart';
 import '../screens/employee/employee_tasks_screen.dart';
 
+import '../screens/profile/profile_screen.dart';
+import '../core/session/session_roles.dart';
+
 class EmployeeNavigation extends StatefulWidget {
   final EmployeeModel loggedInEmployee;
 
@@ -38,6 +41,10 @@ class _EmployeeNavigationState extends State<EmployeeNavigation> {
       ),
       EmployeeTasksScreen(
         loggedInEmployee: widget.loggedInEmployee,
+      ),
+      ProfileScreen(
+        role: SessionRoles.employee,
+        employeeId: widget.loggedInEmployee.id,
       ),
     ];
 

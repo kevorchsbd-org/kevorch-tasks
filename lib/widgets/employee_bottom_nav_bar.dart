@@ -18,6 +18,7 @@ class EmployeeBottomNavBar extends StatelessWidget {
       {'icon': Icons.grid_view_rounded, 'label': 'Dashboard'},
       {'icon': Icons.folder_open_rounded, 'label': 'My Projects'},
       {'icon': Icons.assignment_outlined, 'label': 'My Tasks'},
+      {'icon': Icons.person_outline_rounded, 'label': 'Profile'},
     ];
 
     return Container(

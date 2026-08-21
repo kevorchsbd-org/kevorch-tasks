@@ -8,6 +8,8 @@ import '../../widgets/primary_button.dart';
 import '../../navigation/super_admin_navigation.dart';
 import '../../navigation/admin_navigation.dart';
 import '../../navigation/employee_navigation.dart';
+import '../../core/session/session_roles.dart';
+import '../../core/session/session_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,22 +52,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // 1. Check Super Admin Credentials
       if (email == "superadmin@kevorch.com" && (password == "super123" || password == "admin123")) {
+        await SessionService.saveSession(
+          role: SessionRoles.superAdmin,
+          userId: 'superadmin',
+          email: email,
+        );
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pushReplacement(
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
           AppPageRoute.create(const SuperAdminNavigation()),
+          (route) => false,
         );
         return;
       }
 
       // 2. Check Admin Credentials
       if (email == "admin@kevorch.com" && password == "admin123") {
+        await SessionService.saveSession(
+          role: SessionRoles.admin,
+          userId: 'admin',
+          email: email,
+        );
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pushReplacement(
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
           AppPageRoute.create(const AdminNavigation()),
+          (route) => false,
         );
         return;
       }
@@ -76,13 +92,21 @@ class _LoginScreenState extends State<LoginScreen> {
       final isValidEmpPassword = password == "emp@123" || password == "emp123" || password == "admin123";
 
       if (employee != null && isValidEmpPassword) {
+        await SessionService.saveSession(
+          role: SessionRoles.employee,
+          userId: 'employee_${employee.id}',
+          email: employee.email,
+          employeeId: employee.id,
+        );
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pushReplacement(
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
           AppPageRoute.create(
             EmployeeNavigation(loggedInEmployee: employee),
           ),
+          (route) => false,
         );
         return;
       }

@@ -5,6 +5,9 @@ import '../../core/animations/app_animations.dart';
 import '../../data/dummy_data.dart';
 import '../../data/models.dart';
 import '../../widgets/primary_button.dart';
+import '../../widgets/student_submission_read_only_view.dart';
+import '../../widgets/project_timeline.dart';
+import '../../widgets/student_process_card.dart';
 import 'assign_employee_modal.dart';
 
 class ProjectDetailsScreen extends StatelessWidget {
@@ -302,10 +305,64 @@ class ProjectDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
+                      // Project Journey (Timeline) Section
+                      FadeSlideTransition(
+                        delay: const Duration(milliseconds: 350),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: AppColors.borderGray),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: AppColors.cardShadow,
+                                blurRadius: 10,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Project Journey & Timeline",
+                                style: AppTypography.cardTitle.copyWith(fontSize: 18),
+                              ),
+                              const SizedBox(height: 16),
+                              ProjectTimeline(
+                                project: project,
+                                isAdmin: true,
+                                onRework: () => data.setProjectTimelineStage(project.id, 'Rework'),
+                                onTesting: () => data.setProjectTimelineStage(project.id, 'Testing'),
+                                onReview: () => data.setProjectTimelineStage(project.id, 'Phase 1 Review'),
+                                onClosure: () => data.setProjectTimelineStage(project.id, 'Project Closure'),
+                                onConfirmClosure: () => _showConfirmClosureDialog(context, data, project),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
                       // ── Submissions (Employee TO DO history) ────────────────
                       FadeSlideTransition(
                         delay: const Duration(milliseconds: 400),
                         child: _SubmissionsSection(projectId: projectId),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // ── Student Submissions ────────────────────────────────
+                      FadeSlideTransition(
+                        delay: const Duration(milliseconds: 450),
+                        child: _StudentSubmissionsSection(projectId: projectId),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // ── Student Process Logs ──────────────────────────────
+                      FadeSlideTransition(
+                        delay: const Duration(milliseconds: 500),
+                        child: _StudentProcessesSection(projectId: projectId),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -350,6 +407,148 @@ class ProjectDetailsScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showConfirmClosureDialog(BuildContext context, DummyDataProvider provider, ProjectModel project) {
+    final validation = provider.validateProjectClosure(project.id);
+    final isValid = validation['isValid'] == true;
+    final incompleteItems = List<String>.from(validation['incompleteItems'] ?? []);
+
+    if (!isValid) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'Prerequisites Pending',
+                style: AppTypography.cardTitle.copyWith(fontSize: 18),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'This project cannot be completed yet. The following required tasks/submissions are incomplete:',
+                style: AppTypography.body.copyWith(fontSize: 13, height: 1.4),
+              ),
+              const SizedBox(height: 12),
+              ...incompleteItems.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: AppTypography.bodySecondary.copyWith(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                'OK',
+                style: AppTypography.label.copyWith(color: AppColors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Otherwise, show confirmation dialog to finalize project
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text(
+          'Confirm Project Completion?',
+          style: AppTypography.cardTitle.copyWith(fontSize: 18),
+        ),
+        content: Text(
+          'Once confirmed, the project will be permanently marked as COMPLETED and all user modifications will be locked.',
+          style: AppTypography.body.copyWith(fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: AppTypography.label.copyWith(color: AppColors.mediumGray, fontWeight: FontWeight.bold),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              provider.confirmProjectClosure(project.id);
+              
+              // Success notice dialog
+              showDialog(
+                context: context,
+                builder: (successCtx) => AlertDialog(
+                  backgroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFDCFCE7),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 36),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Project Completed',
+                        style: AppTypography.cardTitle.copyWith(fontSize: 18),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'The project has been closed and locked permanently.',
+                        style: AppTypography.bodySecondary.copyWith(fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(successCtx),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.black,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          elevation: 0,
+                        ),
+                        child: const Text('OK', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Text(
+              'Complete Project',
+              style: AppTypography.label.copyWith(color: const Color(0xFF16A34A), fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -651,6 +850,254 @@ class _DialogRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _StudentSubmissionsSection extends StatelessWidget {
+  final String projectId;
+  const _StudentSubmissionsSection({required this.projectId});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: DummyDataProvider(),
+      builder: (context, _) {
+        final provider = DummyDataProvider();
+        final submissions = provider.getSubmittedStudentSubmissionsByProject(projectId);
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderGray),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 10,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Student Submissions',
+                    style: AppTypography.cardTitle.copyWith(fontSize: 18),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: submissions.isEmpty
+                          ? AppColors.surfaceGray
+                          : const Color(0xFFDCFCE7),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: submissions.isEmpty
+                            ? AppColors.borderGray
+                            : const Color(0xFF16A34A).withAlpha(60),
+                      ),
+                    ),
+                    child: Text(
+                      '${submissions.length} submitted',
+                      style: AppTypography.label.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: submissions.isEmpty
+                            ? AppColors.mediumGray
+                            : const Color(0xFF16A34A),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (submissions.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceGray,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderGray),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.inbox_outlined, size: 20, color: AppColors.lightGray),
+                      const SizedBox(width: 10),
+                      Text(
+                        'No student submissions yet',
+                        style: AppTypography.bodySecondary.copyWith(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: submissions.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final s = submissions[index];
+                    final empName = provider.getEmployeeById(s.employeeId)?.employeeName ?? 'Unknown Employee';
+
+                    return GestureDetector(
+                      onTap: () => StudentSubmissionReadOnlyView.show(context, s),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF16A34A).withAlpha(60)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.check_circle_outline_rounded, size: 15, color: Color(0xFF16A34A)),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    s.studentName,
+                                    style: AppTypography.cardTitle.copyWith(fontSize: 14),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF16A34A),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'SUBMITTED',
+                                    style: AppTypography.label.copyWith(
+                                      fontSize: 10,
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 4,
+                              children: [
+                                _MetaChip(Icons.badge_outlined, s.registerNumber),
+                                _MetaChip(Icons.category_outlined, s.department),
+                                _MetaChip(Icons.person_outline_rounded, 'By $empName'),
+                                if (s.documentName != null)
+                                  _MetaChip(Icons.attach_file_rounded, s.documentName!),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _StudentProcessesSection extends StatelessWidget {
+  final String projectId;
+
+  const _StudentProcessesSection({required this.projectId});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: DummyDataProvider(),
+      builder: (context, _) {
+        final provider = DummyDataProvider();
+        final processes = provider.getProcessesByProject(projectId)
+            .where((p) => p.status == 'SUBMITTED')
+            .toList();
+
+        processes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderGray),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 10,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Student Process Logs",
+                    style: AppTypography.cardTitle.copyWith(fontSize: 18),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceGray,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.borderGray),
+                    ),
+                    child: Text(
+                      "${processes.length} logs",
+                      style: AppTypography.label.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (processes.isEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "No student process logs submitted yet.",
+                    style: AppTypography.bodySecondary,
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: processes.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final process = processes[index];
+                    return StudentProcessCard(
+                      process: process,
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
