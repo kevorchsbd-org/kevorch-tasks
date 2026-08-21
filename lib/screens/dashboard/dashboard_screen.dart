@@ -23,11 +23,13 @@ class DashboardScreen extends StatelessWidget {
       builder: (context, _) {
         final data = DummyDataProvider();
         final employees = data.employees;
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isMobile = screenWidth < 768;
 
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: CustomAppBar(
-            title: "Admin Dashboard",
+            title: "Dashboard",
             showHeaderProfile: true,
             onMonitoringPressed: () {
               Navigator.of(context).push(
@@ -40,34 +42,52 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Section Title & Counter
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Employee Overview",
-                      style: AppTypography.sectionTitle.copyWith(fontSize: 16),
+                // 1. Welcome Section (Only Welcome back, Admin 👋, no subtitle)
+                FadeSlideTransition(
+                  delay: const Duration(milliseconds: 50),
+                  child: Text(
+                    "Welcome back, Admin 👋",
+                    style: AppTypography.pageTitle.copyWith(
+                      fontSize: isMobile ? 16 : 22,
+                      fontWeight: FontWeight.w700,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryRedLight,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        "${employees.length} Active",
-                        style: AppTypography.label.copyWith(
-                          color: AppColors.primaryRed,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 14),
 
-                // Employee Cards List
+                // 2. Employee Overview Section Title & Counter
+                FadeSlideTransition(
+                  delay: const Duration(milliseconds: 100),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Employee Overview",
+                        style: AppTypography.sectionTitle.copyWith(
+                          fontSize: isMobile ? 16 : 18,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryRedLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "${employees.length} Active",
+                          style: AppTypography.label.copyWith(
+                            color: AppColors.primaryRed,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // 3. Employee Cards List
                 if (employees.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 36),
@@ -87,9 +107,10 @@ class DashboardScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final employee = employees[index];
                       return FadeSlideTransition(
-                        delay: Duration(milliseconds: 100 + (index * 60)),
+                        delay: Duration(milliseconds: 150 + (index * 50)),
                         child: _DashboardEmployeeCard(
                           employee: employee,
+                          isMobile: isMobile,
                           onTap: () {
                             Navigator.of(context).push(
                               AppPageRoute.create(
@@ -113,10 +134,12 @@ class DashboardScreen extends StatelessWidget {
 
 class _DashboardEmployeeCard extends StatelessWidget {
   final EmployeeModel employee;
+  final bool isMobile;
   final VoidCallback onTap;
 
   const _DashboardEmployeeCard({
     required this.employee,
+    this.isMobile = true,
     required this.onTap,
   });
 
@@ -169,7 +192,7 @@ class _DashboardEmployeeCard extends StatelessWidget {
                   Text(
                     employee.employeeName,
                     style: AppTypography.cardTitle.copyWith(
-                      fontSize: 14,
+                      fontSize: isMobile ? 14 : 16,
                       fontWeight: FontWeight.w700,
                     ),
                     maxLines: 1,
@@ -179,7 +202,7 @@ class _DashboardEmployeeCard extends StatelessWidget {
                   Text(
                     employee.role,
                     style: AppTypography.bodySecondary.copyWith(
-                      fontSize: 11.5,
+                      fontSize: isMobile ? 11.5 : 13,
                       color: AppColors.primaryRed,
                       fontWeight: FontWeight.w600,
                     ),
@@ -199,7 +222,7 @@ class _DashboardEmployeeCard extends StatelessWidget {
                         child: Text(
                           employee.currentProject,
                           style: AppTypography.label.copyWith(
-                            fontSize: 11,
+                            fontSize: isMobile ? 11 : 12,
                             color: AppColors.mediumGray,
                           ),
                           maxLines: 1,

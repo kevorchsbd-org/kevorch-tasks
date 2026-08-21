@@ -88,7 +88,8 @@ class TaskModel {
   final String assignedEmployee;
   final String createdDate;
   final String dueDate;
-  final String status;
+  String status;
+  String? workUpdateNote;
 
   TaskModel({
     required this.id,
@@ -100,6 +101,7 @@ class TaskModel {
     required this.createdDate,
     required this.dueDate,
     this.status = 'TO DO',
+    this.workUpdateNote,
   });
 }
 
@@ -118,6 +120,7 @@ class NotificationItemModel {
   final String? relatedTaskId;
   final String? relatedProjectId;
   final String? relatedEmployeeId;
+  final String? targetEmployeeId; // null = Admin notification, set = target employee notification
 
   // Short contextual subtitle (e.g. project name) shown on list card
   final String? subTitle;
@@ -140,10 +143,41 @@ class NotificationItemModel {
     this.relatedTaskId,
     this.relatedProjectId,
     this.relatedEmployeeId,
+    this.targetEmployeeId,
     this.subTitle,
     this.eventDateTime,
     this.previousStatus,
     this.newStatus,
   });
+}
+
+class AdminUserModel {
+  final String id;
+  final String name;
+  final String email;
+  final String role; // "SUPER ADMIN" or "ADMIN"
+  final String accessScope;
+  final String createdDate;
+  bool isActive;
+
+  AdminUserModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.accessScope,
+    required this.createdDate,
+    this.isActive = true,
+  });
+
+  String get initials {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      return parts[0][0].toUpperCase();
+    }
+    return 'AD';
+  }
 }
 

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/animations/app_animations.dart';
+import '../../data/dummy_data.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
+import '../../navigation/super_admin_navigation.dart';
 import '../../navigation/admin_navigation.dart';
+import '../../navigation/employee_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,9 +18,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: "admin@kevorch.com");
-  final _passwordController = TextEditingController(text: "admin123");
+  final _emailController = TextEditingController(text: "superadmin@kevorch.com");
+  final _passwordController = TextEditingController(text: "super123");
   bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -27,22 +31,67 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() async {
+    setState(() {
+      _errorMessage = null;
+    });
+
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
       });
 
       // Simulate subtle auth delay
-      await Future.delayed(const Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      if (mounted) {
+      if (!mounted) return;
+
+      final email = _emailController.text.trim().toLowerCase();
+      final password = _passwordController.text.trim();
+
+      // 1. Check Super Admin Credentials
+      if (email == "superadmin@kevorch.com" && (password == "super123" || password == "admin123")) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pushReplacement(
+          AppPageRoute.create(const SuperAdminNavigation()),
+        );
+        return;
+      }
+
+      // 2. Check Admin Credentials
+      if (email == "admin@kevorch.com" && password == "admin123") {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pushReplacement(
           AppPageRoute.create(const AdminNavigation()),
         );
+        return;
       }
+
+      // 3. Check Employee Credentials via DummyDataProvider
+      final provider = DummyDataProvider();
+      final employee = provider.getEmployeeByEmail(email);
+      final isValidEmpPassword = password == "emp@123" || password == "emp123" || password == "admin123";
+
+      if (employee != null && isValidEmpPassword) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pushReplacement(
+          AppPageRoute.create(
+            EmployeeNavigation(loggedInEmployee: employee),
+          ),
+        );
+        return;
+      }
+
+      // 4. Invalid credentials error state
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Invalid email or password";
+      });
     }
   }
 
@@ -116,16 +165,47 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 36),
+
+                    if (_errorMessage != null) ...[
+                      FadeSlideTransition(
+                        delay: Duration.zero,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryRedLight,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.primaryRed.withAlpha(100)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline_rounded, color: AppColors.primaryRed, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  _errorMessage!,
+                                  style: AppTypography.body.copyWith(
+                                    color: AppColors.primaryRedDark,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     FadeSlideTransition(
                       delay: const Duration(milliseconds: 300),
                       child: CustomTextField(
-                        label: "Email or Username",
-                        hint: "admin@kevorch.com",
+                        label: "Email Address",
+                        hint: "Enter email (e.g. superadmin@kevorch.com)",
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
-                            return "Please enter email or username";
+                            return "Please enter email address";
                           }
                           return null;
                         },
@@ -160,12 +240,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 28),
                     FadeSlideTransition(
                       delay: const Duration(milliseconds: 600),
-                      child: Text(
-                        "Protected KEVOCH PRO Admin Portal v1.0",
-                        style: AppTypography.bodySecondary.copyWith(
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        children: [
+                          Text(
+                            "Protected KEVOCH PRO SaaS Portal v1.0",
+                            style: AppTypography.bodySecondary.copyWith(
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Super Admin: superadmin@kevorch.com (super123)\nAdmin: admin@kevorch.com (admin123)  •  Emp: employee@kevorch.com (emp@123)",
+                            style: AppTypography.bodySecondary.copyWith(
+                              fontSize: 10,
+                              color: AppColors.mediumGray.withAlpha(180),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -10,6 +10,8 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final int maxLines;
   final String? Function(String?)? validator;
+  final IconData? prefixIcon;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     super.key,
@@ -20,6 +22,8 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.validator,
+    this.prefixIcon,
+    this.onChanged,
   });
 
   @override
@@ -55,11 +59,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: AppTypography.label,
-        ),
-        const SizedBox(height: 8),
+        if (widget.label.isNotEmpty) ...[
+          Text(
+            widget.label,
+            style: AppTypography.label,
+          ),
+          const SizedBox(height: 8),
+        ],
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
@@ -77,6 +83,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             keyboardType: widget.keyboardType,
             maxLines: widget.isPassword ? 1 : widget.maxLines,
             validator: widget.validator,
+            onChanged: widget.onChanged,
             style: AppTypography.body,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -86,6 +93,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 vertical: 14,
               ),
               border: InputBorder.none,
+              prefixIcon: widget.prefixIcon != null
+                  ? Icon(
+                      widget.prefixIcon,
+                      color: AppColors.mediumGray,
+                      size: 20,
+                    )
+                  : null,
               suffixIcon: widget.isPassword
                   ? IconButton(
                       icon: Icon(

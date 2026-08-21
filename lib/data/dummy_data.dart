@@ -14,7 +14,7 @@ class DummyDataProvider extends ChangeNotifier {
       collegeName: 'IIT Madras',
       domain: 'Web Development',
       createdDate: '20 August 2026',
-      assignedEmployee: null,
+      assignedEmployee: 'Employee',
     ),
     ProjectModel(
       id: 'p2',
@@ -23,7 +23,7 @@ class DummyDataProvider extends ChangeNotifier {
       collegeName: 'NIT Trichy',
       domain: 'Artificial Intelligence',
       createdDate: '18 August 2026',
-      assignedEmployee: 'Sarah Jenkins',
+      assignedEmployee: 'Employee',
     ),
     ProjectModel(
       id: 'p3',
@@ -32,7 +32,7 @@ class DummyDataProvider extends ChangeNotifier {
       collegeName: 'Anna University',
       domain: 'Internet of Things',
       createdDate: '15 August 2026',
-      assignedEmployee: null,
+      assignedEmployee: 'Michael Chen',
     ),
     ProjectModel(
       id: 'p4',
@@ -45,14 +45,60 @@ class DummyDataProvider extends ChangeNotifier {
     ),
   ];
 
+  final List<AdminUserModel> _adminUsers = [
+    AdminUserModel(
+      id: 'sa1',
+      name: 'Super Admin',
+      email: 'superadmin@kevorch.com',
+      role: 'SUPER ADMIN',
+      accessScope: 'Full System & Operations Access',
+      createdDate: '01 January 2026',
+      isActive: true,
+    ),
+    AdminUserModel(
+      id: 'a1',
+      name: 'KEVOCH System Admin',
+      email: 'admin@kevorch.com',
+      role: 'ADMIN',
+      accessScope: 'Project, Task & Employee Control',
+      createdDate: '15 June 2026',
+      isActive: true,
+    ),
+    AdminUserModel(
+      id: 'a2',
+      name: 'DevOps & Infrastructure Lead',
+      email: 'devops@kevorch.com',
+      role: 'ADMIN',
+      accessScope: 'Monitoring & System Metrics',
+      createdDate: '10 July 2026',
+      isActive: true,
+    ),
+  ];
+
   final List<EmployeeModel> _employees = [
+    EmployeeModel(
+      id: 'e_demo',
+      employeeName: 'Employee',
+      email: 'employee@kevorch.com',
+      role: 'Employee',
+      currentProject: 'Smart Campus Portal',
+      currentTask: 'Frontend Component Development',
+      priority: 'High',
+      deadline: 'Aug 30, 2026',
+      status: 'In Progress',
+      studentId: 'STU-100',
+      studentName: 'Employee User',
+      college: 'IIT Madras',
+      domain: 'Web Development',
+      projectTitle: 'Smart Campus Portal',
+    ),
     EmployeeModel(
       id: 'e1',
       employeeName: 'Sarah Jenkins',
       email: 'sarah.j@admintech.com',
       role: 'Lead Full Stack Dev',
       currentProject: 'Smart Campus Portal',
-      currentTask: 'Database Schema Design',
+      currentTask: 'IoT Telemetry Protocol Test',
       priority: 'High',
       deadline: 'Aug 28, 2026',
       status: 'In Progress',
@@ -116,7 +162,7 @@ class DummyDataProvider extends ChangeNotifier {
       email: 'm.chen@admintech.com',
       role: 'Backend Systems Architect',
       currentProject: 'Smart Campus Portal',
-      currentTask: 'OAuth Auth Module',
+      currentTask: 'Database Schema Design',
       priority: 'High',
       deadline: 'Sep 02, 2026',
       status: 'Pending',
@@ -132,7 +178,7 @@ class DummyDataProvider extends ChangeNotifier {
       email: 'priya.s@admintech.com',
       role: 'Mobile Engineer',
       currentProject: 'E-Library Mobile App',
-      currentTask: 'Book Reader View Integration',
+      currentTask: 'OAuth Auth Module Implementation',
       priority: 'Low',
       deadline: 'Aug 20, 2026',
       status: 'Completed',
@@ -162,10 +208,45 @@ class DummyDataProvider extends ChangeNotifier {
 
   final List<TaskModel> _tasks = [
     TaskModel(
+      id: 't_demo1',
+      taskTitle: 'Frontend UI Components',
+      taskDescription: 'Implement dynamic widgets and interactive forms for Smart Campus Portal.',
+      projectType: 'Smart Campus Portal',
+      taskType: 'Frontend Architecture',
+      assignedEmployee: 'Employee',
+      createdDate: '20 August 2026',
+      dueDate: 'Aug 29, 2026',
+      status: 'TO DO',
+    ),
+    TaskModel(
+      id: 't_demo2',
+      taskTitle: 'AI Placement Dataset Cleanup',
+      taskDescription: 'Normalize student placement data and handle missing value imputations.',
+      projectType: 'AI Placement Predictor',
+      taskType: 'Data Engineering',
+      assignedEmployee: 'Employee',
+      createdDate: '19 August 2026',
+      dueDate: 'Sep 01, 2026',
+      status: 'IN PROGRESS',
+      workUpdateNote: 'Normalized salary fields and completed missing value imputation.',
+    ),
+    TaskModel(
+      id: 't_demo3',
+      taskTitle: 'Student Registration Flow',
+      taskDescription: 'Build student onboarding multi-step wizard UI with real-time validation.',
+      projectType: 'Smart Campus Portal',
+      taskType: 'UI Engineering',
+      assignedEmployee: 'Employee',
+      createdDate: '18 August 2026',
+      dueDate: 'Sep 04, 2026',
+      status: 'REWORK',
+      workUpdateNote: 'Admin requested mobile layout adjustment on Step 2.',
+    ),
+    TaskModel(
       id: 't1',
       taskTitle: 'Database Schema Design',
       taskDescription: 'Define core tables for student enrollment and grades.',
-      projectType: 'Web Development',
+      projectType: 'Smart Campus Portal',
       taskType: 'Backend Architecture',
       assignedEmployee: 'Michael Chen',
       createdDate: '15 August 2026',
@@ -176,39 +257,118 @@ class DummyDataProvider extends ChangeNotifier {
       id: 't2',
       taskTitle: 'Dashboard UI Wireframes',
       taskDescription: 'Create minimalist high-fidelity prototypes in Figma.',
-      projectType: 'Mobile App',
+      projectType: 'E-Library Mobile App',
       taskType: 'UI/UX Design',
       assignedEmployee: 'Alex Rivera',
       createdDate: '16 August 2026',
       dueDate: 'Aug 22, 2026',
       status: 'TO DO',
     ),
-    TaskModel(
-      id: 't3',
-      taskTitle: 'IoT Telemetry Protocol Test',
-      taskDescription: 'Verify MQTT broker connections under high latency.',
-      projectType: 'Internet of Things',
-      taskType: 'Integration Test',
-      assignedEmployee: 'Sarah Jenkins',
-      createdDate: '18 August 2026',
-      dueDate: 'Aug 28, 2026',
-      status: 'TO DO',
-    ),
-    TaskModel(
-      id: 't4',
-      taskTitle: 'OAuth Auth Module Implementation',
-      taskDescription: 'Setup secure token refresh and role based access control.',
-      projectType: 'Web Development',
-      taskType: 'Security & Auth',
-      assignedEmployee: 'Priya Sharma',
-      createdDate: '19 August 2026',
-      dueDate: 'Sep 02, 2026',
-      status: 'TO DO',
-    ),
   ];
 
   final List<NotificationItemModel> _notifications = [
-    // n1 — task_submitted: Alex Rivera submitted Dashboard UI Wireframes
+    // Fixed Demo Employee notifications (targetEmployeeId = 'e_demo')
+    NotificationItemModel(
+      id: 'n_demo1',
+      type: 'task_assigned',
+      employeeName: 'Employee',
+      taskName: 'Frontend UI Components',
+      title: 'New Task Assigned',
+      message: 'You have been assigned to Frontend UI Components',
+      subTitle: 'Smart Campus Portal',
+      timestamp: '5 min ago',
+      eventDateTime: '21 Aug 2026 • 10:25 AM',
+      isRead: false,
+      icon: Icons.assignment_rounded,
+      relatedTaskId: 't_demo1',
+      relatedEmployeeId: 'e_demo',
+      relatedProjectId: 'p1',
+      targetEmployeeId: 'e_demo',
+    ),
+    NotificationItemModel(
+      id: 'n_demo2',
+      type: 'project_assigned',
+      employeeName: 'Employee',
+      taskName: 'Smart Campus Portal',
+      title: 'Project Assigned',
+      message: 'You have been assigned to project Smart Campus Portal',
+      subTitle: 'IIT Madras',
+      timestamp: '30 min ago',
+      eventDateTime: '21 Aug 2026 • 10:00 AM',
+      isRead: false,
+      icon: Icons.folder_shared_rounded,
+      relatedProjectId: 'p1',
+      relatedEmployeeId: 'e_demo',
+      targetEmployeeId: 'e_demo',
+    ),
+    NotificationItemModel(
+      id: 'n_demo3',
+      type: 'task_status_updated',
+      employeeName: 'Employee',
+      taskName: 'Student Registration Flow',
+      title: 'Rework Requested by Admin',
+      message: 'Please update mobile layout on Step 2 of registration flow.',
+      subTitle: 'Smart Campus Portal',
+      timestamp: '1 hour ago',
+      eventDateTime: '21 Aug 2026 • 09:30 AM',
+      isRead: true,
+      icon: Icons.build_circle_outlined,
+      relatedTaskId: 't_demo3',
+      relatedEmployeeId: 'e_demo',
+      relatedProjectId: 'p1',
+      targetEmployeeId: 'e_demo',
+    ),
+    NotificationItemModel(
+      id: 'n_emp1',
+      type: 'task_assigned',
+      employeeName: 'Sarah Jenkins',
+      taskName: 'IoT Telemetry Protocol Test',
+      title: 'New Task Assigned',
+      message: 'You have been assigned to IoT Telemetry Protocol Test',
+      subTitle: 'IoT Lab Monitor',
+      timestamp: '10 min ago',
+      eventDateTime: '21 Aug 2026 • 10:10 AM',
+      isRead: false,
+      icon: Icons.assignment_rounded,
+      relatedTaskId: 't3',
+      relatedEmployeeId: 'e1',
+      relatedProjectId: 'p3',
+      targetEmployeeId: 'e1',
+    ),
+    NotificationItemModel(
+      id: 'n_emp2',
+      type: 'project_assigned',
+      employeeName: 'Sarah Jenkins',
+      taskName: 'AI Placement Predictor',
+      title: 'Project Lead Assigned',
+      message: 'You have been assigned as lead for AI Placement Predictor',
+      subTitle: 'NIT Trichy',
+      timestamp: '1 hour ago',
+      eventDateTime: '21 Aug 2026 • 09:15 AM',
+      isRead: false,
+      icon: Icons.folder_shared_rounded,
+      relatedProjectId: 'p2',
+      relatedEmployeeId: 'e1',
+      targetEmployeeId: 'e1',
+    ),
+    NotificationItemModel(
+      id: 'n_emp3',
+      type: 'task_status_updated',
+      employeeName: 'Sarah Jenkins',
+      taskName: 'AI Placement Model Training',
+      title: 'Action Required: Rework Requested',
+      message: 'Admin requested rework: Please refine model validation split.',
+      subTitle: 'AI Placement Predictor',
+      timestamp: '2 hours ago',
+      eventDateTime: '21 Aug 2026 • 08:30 AM',
+      isRead: true,
+      icon: Icons.build_circle_outlined,
+      relatedTaskId: 't5',
+      relatedEmployeeId: 'e1',
+      relatedProjectId: 'p2',
+      targetEmployeeId: 'e1',
+    ),
+    // Admin Notifications (targetEmployeeId = null)
     NotificationItemModel(
       id: 'n1',
       type: 'task_submitted',
@@ -224,8 +384,8 @@ class DummyDataProvider extends ChangeNotifier {
       relatedTaskId: 't2',
       relatedEmployeeId: 'e2',
       relatedProjectId: 'p4',
+      targetEmployeeId: null,
     ),
-    // n2 — task_assigned: Database Schema Design assigned to Michael Chen
     NotificationItemModel(
       id: 'n2',
       type: 'task_assigned',
@@ -241,86 +401,73 @@ class DummyDataProvider extends ChangeNotifier {
       relatedTaskId: 't1',
       relatedEmployeeId: 'e3',
       relatedProjectId: 'p1',
-    ),
-    // n3 — task_status_updated: IoT Telemetry moved to IN PROGRESS
-    NotificationItemModel(
-      id: 'n3',
-      type: 'task_status_updated',
-      employeeName: 'Sarah Jenkins',
-      taskName: 'IoT Telemetry Protocol Test',
-      title: 'Task Status Updated',
-      message: 'IoT Telemetry Protocol Test status was updated',
-      subTitle: 'IoT Lab Monitor',
-      timestamp: '42 min ago',
-      eventDateTime: '21 Aug 2026 • 09:45 AM',
-      newStatus: 'TO DO',
-      isRead: false,
-      icon: Icons.swap_horiz_rounded,
-      relatedTaskId: 't3',
-      relatedEmployeeId: 'e1',
-      relatedProjectId: 'p3',
-    ),
-    // n4 — project_created: AI Placement Predictor
-    NotificationItemModel(
-      id: 'n4',
-      type: 'project_created',
-      employeeName: 'Admin',
-      taskName: 'N/A',
-      title: 'Project Created',
-      message: 'AI Placement Predictor was created',
-      subTitle: 'NIT Trichy',
-      timestamp: '1 hour ago',
-      eventDateTime: '18 Aug 2026 • 09:00 AM',
-      isRead: false,
-      icon: Icons.create_new_folder_outlined,
-      relatedProjectId: 'p2',
-    ),
-    // n5 — task_submitted (read): Priya Sharma submitted OAuth Auth Module
-    NotificationItemModel(
-      id: 'n5',
-      type: 'task_submitted',
-      employeeName: 'Priya Sharma',
-      taskName: 'OAuth Auth Module Implementation',
-      title: 'Task Submitted',
-      message: 'Priya Sharma submitted OAuth Auth Module Implementation',
-      subTitle: 'Smart Campus Portal',
-      timestamp: '2 hours ago',
-      eventDateTime: '21 Aug 2026 • 08:30 AM',
-      isRead: true,
-      icon: Icons.unarchive_rounded,
-      relatedTaskId: 't4',
-      relatedEmployeeId: 'e4',
-      relatedProjectId: 'p1',
-    ),
-    // n6 — task_status_updated (read): Database Schema Design status updated
-    NotificationItemModel(
-      id: 'n6',
-      type: 'task_status_updated',
-      employeeName: 'Michael Chen',
-      taskName: 'Database Schema Design',
-      title: 'Task Status Updated',
-      message: 'Database Schema Design status was updated',
-      subTitle: 'Smart Campus Portal',
-      timestamp: '3 hours ago',
-      eventDateTime: '21 Aug 2026 • 07:55 AM',
-      newStatus: 'TO DO',
-      isRead: true,
-      icon: Icons.swap_horiz_rounded,
-      relatedTaskId: 't1',
-      relatedEmployeeId: 'e3',
-      relatedProjectId: 'p1',
+      targetEmployeeId: null,
     ),
   ];
 
   List<ProjectModel> get projects => List.unmodifiable(_projects);
   List<EmployeeModel> get employees => List.unmodifiable(_employees);
   List<TaskModel> get tasks => List.unmodifiable(_tasks);
-  List<NotificationItemModel> get notifications => List.unmodifiable(_notifications);
-  bool get hasUnreadNotifications => _notifications.any((n) => !n.isRead);
+  List<AdminUserModel> get adminUsers => List.unmodifiable(_adminUsers);
+  List<NotificationItemModel> get notifications => List.unmodifiable(_notifications.where((n) => n.targetEmployeeId == null).toList());
+
+  bool get hasUnreadNotifications => _notifications.any((n) => n.targetEmployeeId == null && !n.isRead);
+
+  int get totalAdminUsers => _adminUsers.length;
+
+  void addAdminUser(AdminUserModel admin) {
+    _adminUsers.insert(0, admin);
+    notifyListeners();
+  }
+
+  void toggleAdminStatus(String id) {
+    final index = _adminUsers.indexWhere((a) => a.id == id);
+    if (index != -1) {
+      _adminUsers[index].isActive = !_adminUsers[index].isActive;
+      notifyListeners();
+    }
+  }
+
+  // Employee-specific queries & helpers
+  EmployeeModel? getEmployeeByEmail(String email) {
+    try {
+      final query = email.trim().toLowerCase();
+      return _employees.firstWhere((e) => e.email.trim().toLowerCase() == query);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<TaskModel> getTasksByEmployee(String employeeName) {
+    return _tasks.where((t) => t.assignedEmployee.trim().toLowerCase() == employeeName.trim().toLowerCase()).toList();
+  }
+
+  List<ProjectModel> getProjectsByEmployee(String employeeName) {
+    return _projects.where((p) => p.assignedEmployee != null && p.assignedEmployee!.trim().toLowerCase() == employeeName.trim().toLowerCase()).toList();
+  }
+
+  List<NotificationItemModel> getEmployeeNotifications(String employeeId) {
+    return _notifications.where((n) => n.targetEmployeeId == employeeId).toList();
+  }
+
+  bool hasUnreadEmployeeNotifications(String employeeId) {
+    return _notifications.any((n) => n.targetEmployeeId == employeeId && !n.isRead);
+  }
+
+  void markAllEmployeeNotificationsAsRead(String employeeId) {
+    for (var n in _notifications) {
+      if (n.targetEmployeeId == employeeId) {
+        n.isRead = true;
+      }
+    }
+    notifyListeners();
+  }
 
   void markAllNotificationsAsRead() {
     for (var n in _notifications) {
-      n.isRead = true;
+      if (n.targetEmployeeId == null) {
+        n.isRead = true;
+      }
     }
     notifyListeners();
   }
@@ -336,6 +483,56 @@ class DummyDataProvider extends ChangeNotifier {
   void addNotification(NotificationItemModel notification) {
     _notifications.insert(0, notification);
     notifyListeners();
+  }
+
+  void updateTaskStatus(String taskId, String newStatus, {String? workUpdateNote}) {
+    final index = _tasks.indexWhere((t) => t.id == taskId);
+    if (index != -1) {
+      final task = _tasks[index];
+      final oldStatus = task.status;
+      task.status = newStatus;
+      if (workUpdateNote != null) {
+        task.workUpdateNote = workUpdateNote;
+      }
+
+      final now = DateTime.now();
+      final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
+      final emp = _employees.where((e) => e.employeeName.trim() == task.assignedEmployee.trim()).firstOrNull;
+      final proj = _projects.where((p) => p.projectName == task.projectType).firstOrNull;
+
+      // Notify Admin if employee submitted task for review
+      if (newStatus == 'REVIEW') {
+        _notifications.insert(0, NotificationItemModel(
+          id: 'n_${now.millisecondsSinceEpoch}',
+          type: 'task_submitted',
+          employeeName: task.assignedEmployee,
+          taskName: task.taskTitle,
+          title: 'Task Submitted for Review',
+          message: '${task.assignedEmployee} submitted "${task.taskTitle}" for review',
+          subTitle: task.projectType,
+          timestamp: 'Just now',
+          eventDateTime: eventDt,
+          previousStatus: oldStatus,
+          newStatus: newStatus,
+          isRead: false,
+          icon: Icons.rate_review_rounded,
+          relatedTaskId: task.id,
+          relatedProjectId: proj?.id,
+          relatedEmployeeId: emp?.id,
+          targetEmployeeId: null, // Admin target
+        ));
+      }
+
+      notifyListeners();
+    }
+  }
+
+  void updateTaskWorkNote(String taskId, String note) {
+    final index = _tasks.indexWhere((t) => t.id == taskId);
+    if (index != -1) {
+      _tasks[index].workUpdateNote = note;
+      notifyListeners();
+    }
   }
 
   int get totalProjects => _projects.length;
@@ -383,6 +580,7 @@ class DummyDataProvider extends ChangeNotifier {
       isRead: false,
       icon: Icons.create_new_folder_outlined,
       relatedProjectId: project.id,
+      targetEmployeeId: null,
     ));
     notifyListeners();
   }
@@ -393,10 +591,11 @@ class DummyDataProvider extends ChangeNotifier {
       _projects[index].assignedEmployee = employeeName.trim();
       final now = DateTime.now();
       final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
-      // Resolve employee ID from name for relational linking
       final emp = _employees.where((e) => e.employeeName.trim() == employeeName.trim()).firstOrNull;
+
+      // Admin notification
       _notifications.insert(0, NotificationItemModel(
-        id: 'n_${now.millisecondsSinceEpoch}',
+        id: 'n_admin_${now.millisecondsSinceEpoch}',
         type: 'task_assigned',
         employeeName: employeeName.trim(),
         taskName: _projects[index].projectName,
@@ -409,7 +608,29 @@ class DummyDataProvider extends ChangeNotifier {
         icon: Icons.person_add_alt_1_outlined,
         relatedProjectId: projectId,
         relatedEmployeeId: emp?.id,
+        targetEmployeeId: null,
       ));
+
+      // Employee-targeted notification
+      if (emp != null) {
+        _notifications.insert(0, NotificationItemModel(
+          id: 'n_emp_${now.millisecondsSinceEpoch}',
+          type: 'project_assigned',
+          employeeName: employeeName.trim(),
+          taskName: _projects[index].projectName,
+          title: 'New Project Assigned',
+          message: 'You have been assigned to project ${_projects[index].projectName}',
+          subTitle: _projects[index].projectName,
+          timestamp: 'Just now',
+          eventDateTime: eventDt,
+          isRead: false,
+          icon: Icons.folder_shared_rounded,
+          relatedProjectId: projectId,
+          relatedEmployeeId: emp.id,
+          targetEmployeeId: emp.id,
+        ));
+      }
+
       notifyListeners();
     }
   }
@@ -431,6 +652,7 @@ class DummyDataProvider extends ChangeNotifier {
       isRead: false,
       icon: Icons.person_outline_rounded,
       relatedEmployeeId: employee.id,
+      targetEmployeeId: null,
     ));
     notifyListeners();
   }
@@ -439,11 +661,12 @@ class DummyDataProvider extends ChangeNotifier {
     _tasks.insert(0, task);
     final now = DateTime.now();
     final eventDt = '${now.day} ${_monthName(now.month)} ${now.year} • ${_formatTime(now)}';
-    // Resolve project and employee IDs for relational linking
     final proj = _projects.where((p) => p.projectName == task.projectType).firstOrNull;
     final emp = _employees.where((e) => e.employeeName.trim() == task.assignedEmployee.trim()).firstOrNull;
+
+    // Admin notification
     _notifications.insert(0, NotificationItemModel(
-      id: 'n_${now.millisecondsSinceEpoch}',
+      id: 'n_admin_${now.millisecondsSinceEpoch}',
       type: 'task_assigned',
       employeeName: task.assignedEmployee,
       taskName: task.taskTitle,
@@ -457,7 +680,30 @@ class DummyDataProvider extends ChangeNotifier {
       relatedTaskId: task.id,
       relatedProjectId: proj?.id,
       relatedEmployeeId: emp?.id,
+      targetEmployeeId: null,
     ));
+
+    // Employee notification
+    if (emp != null) {
+      _notifications.insert(0, NotificationItemModel(
+        id: 'n_emp_${now.millisecondsSinceEpoch}',
+        type: 'task_assigned',
+        employeeName: task.assignedEmployee,
+        taskName: task.taskTitle,
+        title: 'New Task Assigned',
+        message: 'You were assigned to "${task.taskTitle}"',
+        subTitle: task.projectType,
+        timestamp: 'Just now',
+        eventDateTime: eventDt,
+        isRead: false,
+        icon: Icons.assignment_rounded,
+        relatedTaskId: task.id,
+        relatedProjectId: proj?.id,
+        relatedEmployeeId: emp.id,
+        targetEmployeeId: emp.id,
+      ));
+    }
+
     notifyListeners();
   }
 
