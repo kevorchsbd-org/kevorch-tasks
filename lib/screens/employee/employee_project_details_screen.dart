@@ -116,7 +116,7 @@ class _EmployeeProjectDetailsScreenState
           ),
           floatingActionButton: isProjectCompleted
               ? null
-              : (_selectedTab == 1
+              : (_selectedTab == 0
                   ? (_workSubTab == 0
                       ? FloatingActionButton.small(
                           onPressed: () => _TodoBottomSheet.show(
@@ -136,7 +136,7 @@ class _EmployeeProjectDetailsScreenState
                               child: const Icon(Icons.add_rounded, color: AppColors.white, size: 20),
                             )
                           : null)
-                  : _selectedTab == 2
+                  : _selectedTab == 1
                       ? FloatingActionButton.small(
                           onPressed: () => _openStudentSubmissionForm(null),
                           backgroundColor: AppColors.primaryRed,
@@ -155,10 +155,10 @@ class _EmployeeProjectDetailsScreenState
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: 4,
+                  itemCount: 3,
                   separatorBuilder: (context, index) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
-                    final tabs = ['Overview', 'Work', 'Submissions', 'Timeline'];
+                    final tabs = ['Overview', 'Submissions', 'Timeline'];
                     final title = tabs[index];
                     final isSelected = _selectedTab == index;
 
@@ -225,119 +225,136 @@ class _EmployeeProjectDetailsScreenState
   }) {
     switch (_selectedTab) {
       case 0:
-        return _buildOverviewTab(updatedProject);
+        return _buildOverviewTab(
+          context,
+          updatedProject: updatedProject,
+          allTodos: allTodos,
+          filteredTodos: filteredTodos,
+          projectTasks: projectTasks,
+        );
       case 1:
-        return _buildWorkTab(context, allTodos, filteredTodos, updatedProject, projectTasks);
-      case 2:
         return _buildSubmissionsTab(context, filteredSubs);
-      case 3:
+      case 2:
         return _buildTimelineTab(context, updatedProject);
       default:
         return const SizedBox();
     }
   }
 
-  Widget _buildOverviewTab(ProjectModel updatedProject) {
-    return FadeSlideTransition(
-      delay: const Duration(milliseconds: 60),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.borderGray, width: 1.0),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 12,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryRedLight,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.folder_rounded,
-                    color: AppColors.primaryRed,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        updatedProject.projectName,
-                        style: AppTypography.pageTitle.copyWith(
-                          fontSize: 20,
-                          height: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        updatedProject.collegeName,
-                        style: AppTypography.bodySecondary.copyWith(fontSize: 14),
-                      ),
-                    ],
-                  ),
+  Widget _buildOverviewTab(
+    BuildContext context, {
+    required ProjectModel updatedProject,
+    required List<EmployeeTodoModel> allTodos,
+    required List<EmployeeTodoModel> filteredTodos,
+    required List<TaskModel> projectTasks,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FadeSlideTransition(
+          delay: const Duration(milliseconds: 60),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.borderGray, width: 1.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.cardShadow,
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(color: AppColors.borderGray, height: 1),
-            const SizedBox(height: 16),
-            Text(
-              'Project Description',
-              style: AppTypography.label.copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              updatedProject.projectDescription,
-              style: AppTypography.body.copyWith(
-                fontSize: 14,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 16,
-              runSpacing: 12,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _InfoChip(
-                  Icons.category_outlined,
-                  'Domain',
-                  updatedProject.domain,
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryRedLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.folder_rounded,
+                        color: AppColors.primaryRed,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            updatedProject.projectName,
+                            style: AppTypography.pageTitle.copyWith(
+                              fontSize: 20,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            updatedProject.collegeName,
+                            style: AppTypography.bodySecondary.copyWith(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                _InfoChip(
-                  Icons.calendar_today_outlined,
-                  'Assigned Date',
-                  updatedProject.assignedDate != null
-                      ? '${updatedProject.assignedDate!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][updatedProject.assignedDate!.month]} ${updatedProject.assignedDate!.year}'
-                      : updatedProject.createdDate,
+                const SizedBox(height: 16),
+                const Divider(color: AppColors.borderGray, height: 1),
+                const SizedBox(height: 16),
+                Text(
+                  'Project Description',
+                  style: AppTypography.label.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                _InfoChip(
-                  Icons.person_outline_rounded,
-                  'Lead',
-                  updatedProject.assignedEmployee ?? 'Unassigned',
+                const SizedBox(height: 6),
+                Text(
+                  updatedProject.projectDescription,
+                  style: AppTypography.body.copyWith(
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 12,
+                  children: [
+                    _InfoChip(
+                      Icons.category_outlined,
+                      'Domain',
+                      updatedProject.domain,
+                    ),
+                    _InfoChip(
+                      Icons.calendar_today_outlined,
+                      'Assigned Date',
+                      updatedProject.assignedDate != null
+                          ? '${updatedProject.assignedDate!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][updatedProject.assignedDate!.month]} ${updatedProject.assignedDate!.year}'
+                          : updatedProject.createdDate,
+                    ),
+                    _InfoChip(
+                      Icons.person_outline_rounded,
+                      'Lead',
+                      updatedProject.assignedEmployee ?? 'Unassigned',
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 24),
+        _buildWorkTab(context, allTodos, filteredTodos, updatedProject, projectTasks),
+      ],
     );
   }
 

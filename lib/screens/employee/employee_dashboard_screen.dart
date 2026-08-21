@@ -267,9 +267,12 @@ class EmployeeDashboardScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "My Assigned Projects",
-                                  style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                                Expanded(
+                                  child: Text(
+                                    "My Assigned Projects",
+                                    style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 if (employeeProjects.isNotEmpty)
                                   TextButton(
@@ -333,9 +336,12 @@ class EmployeeDashboardScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "Notifications",
-                              style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                            Expanded(
+                              child: Text(
+                                "Notifications",
+                                style: AppTypography.sectionTitle.copyWith(fontSize: 18),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             TextButton(
                               onPressed: () {
@@ -569,20 +575,27 @@ class _DashboardProjectCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.school_outlined,
-                        size: 14,
-                        color: AppColors.mediumGray,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        project.collegeName,
-                        style: AppTypography.bodySecondary.copyWith(fontSize: 13),
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.school_outlined,
+                          size: 14,
+                          color: AppColors.mediumGray,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            project.collegeName,
+                            style: AppTypography.bodySecondary.copyWith(fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
 import 'core/session/session_service.dart';
-import 'core/session/session_gate.dart';
+import 'screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ class AdminProjectManagementApp extends StatelessWidget {
       title: 'Admin Project Management',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const SessionGate(),
+      home: const SplashScreen(),
     );
   }
 }
