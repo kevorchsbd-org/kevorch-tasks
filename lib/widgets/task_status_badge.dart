@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/theme/app_colors.dart';
 
 class TaskStatusBadge extends StatelessWidget {
   final String status;
@@ -17,39 +18,40 @@ class TaskStatusBadge extends StatelessWidget {
 
     switch (status.toUpperCase()) {
       case 'TO DO':
-        bg = const Color(0xFFF3F4F6);
-        fg = const Color(0xFF6B7280);
+        bg = AppColors.surfaceGray;
+        fg = AppColors.textSecondary;
         break;
       case 'IN PROGRESS':
-        bg = const Color(0xFFEFF6FF);
-        fg = const Color(0xFF2563EB);
+        bg = AppColors.primaryLight;
+        fg = AppColors.primary;
         break;
       case 'REVIEW':
         bg = const Color(0xFFF3E8FF);
         fg = const Color(0xFF9333EA);
         break;
       case 'REWORK':
-        bg = const Color(0xFFFEF3C7);
+        bg = AppColors.warningLight;
         fg = const Color(0xFFD97706);
         break;
       case 'TESTING':
-        bg = const Color(0xFFECFDF5);
-        fg = const Color(0xFF059669);
+        bg = AppColors.infoLight;
+        fg = AppColors.info;
         break;
       case 'DONE':
-        bg = const Color(0xFFDCFCE7);
-        fg = const Color(0xFF16A34A);
+        bg = AppColors.successLight;
+        fg = AppColors.success;
         break;
       default:
-        bg = const Color(0xFFF3F4F6);
-        fg = const Color(0xFF6B7280);
+        bg = AppColors.surfaceGray;
+        fg = AppColors.textSecondary;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: fg.withAlpha(50), width: 0.8),
       ),
       child: Text(
         status.toUpperCase(),

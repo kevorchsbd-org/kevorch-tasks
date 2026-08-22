@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
+import '../core/animations/app_animations.dart';
 import '../data/models.dart';
+import '../screens/employees/employee_details_screen.dart';
+import 'priority_badge.dart';
 
 class EmployeeCard extends StatelessWidget {
   final EmployeeModel employee;
@@ -13,79 +16,114 @@ class EmployeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderGray),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 8,
-            offset: Offset(0, 2),
+    return ScaleTapWidget(
+      onTap: () {
+        Navigator.of(context).push(
+          AppPageRoute.create(
+            EmployeeDetailsScreen(employeeId: employee.id),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.black,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.borderGray, width: 1),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 1),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.cardShadow,
+              blurRadius: 8,
+              offset: Offset(0, 2),
             ),
-            child: Center(
-              child: Text(
-                employee.initials,
-                style: AppTypography.cardTitle.copyWith(
-                  color: AppColors.white,
-                  fontSize: 16,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  employee.initials,
+                  style: AppTypography.cardTitle.copyWith(
+                    color: AppColors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  employee.employeeName,
-                  style: AppTypography.cardTitle.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  employee.email,
-                  style: AppTypography.bodySecondary.copyWith(fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceGray,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: AppColors.borderGray),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          employee.employeeName,
+                          style: AppTypography.cardTitle.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      PriorityBadge(priority: employee.priority, fontSize: 10),
+                    ],
                   ),
-                  child: Text(
+                  const SizedBox(height: 2),
+                  Text(
                     employee.role,
-                    style: AppTypography.label.copyWith(
+                    style: AppTypography.bodySecondary.copyWith(
                       fontSize: 12,
-                      color: AppColors.darkGray,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.folder_outlined,
+                        size: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          employee.currentProject,
+                          style: AppTypography.label.copyWith(
+                            fontSize: 11.5,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.lightGray,
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textMuted,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

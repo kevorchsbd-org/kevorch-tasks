@@ -521,7 +521,7 @@ class _ActionButton extends StatelessWidget {
               icon: Icons.task_alt_rounded,
               onTap: () => Navigator.of(context).push(
                 AppPageRoute.create(
-                  TaskDetailsScreen(taskId: notification.relatedTaskId!),
+                  TaskDetailsScreen(task: notification.relatedTaskId!),
                 ),
               ),
             ),
@@ -550,7 +550,7 @@ class _ActionButton extends StatelessWidget {
         fullWidth: true,
         onTap: () => Navigator.of(context).push(
           AppPageRoute.create(
-            TaskDetailsScreen(taskId: notification.relatedTaskId!),
+            TaskDetailsScreen(task: notification.relatedTaskId!),
           ),
         ),
       );

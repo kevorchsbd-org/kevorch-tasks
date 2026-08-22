@@ -5,9 +5,49 @@ import '../../data/dummy_data.dart';
 import '../../data/models.dart';
 import '../../core/animations/app_animations.dart';
 import 'notification_details_screen.dart';
+import '../tasks/task_details_screen.dart';
+import '../projects/project_details_screen.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
+
+  void _handleNotificationTap(BuildContext context, NotificationItemModel notification) {
+    final provider = DummyDataProvider();
+    provider.markNotificationAsRead(notification.id);
+
+    if (notification.relatedTaskId != null) {
+      final task = provider.getTaskById(notification.relatedTaskId!);
+      if (task != null) {
+        Navigator.push(
+          context,
+          AppPageRoute.create(
+            TaskDetailsScreen(task: task),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (notification.relatedProjectId != null) {
+      final project = provider.getProjectById(notification.relatedProjectId!);
+      if (project != null) {
+        Navigator.push(
+          context,
+          AppPageRoute.create(
+            ProjectDetailsScreen(projectId: project.id),
+          ),
+        );
+        return;
+      }
+    }
+
+    Navigator.push(
+      context,
+      AppPageRoute.create(
+        NotificationDetailsScreen(notification: notification),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,21 +58,21 @@ class NotificationsScreen extends StatelessWidget {
         final notifications = data.notifications;
 
         return Scaffold(
-          backgroundColor: AppColors.white,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.black,
-                size: 18,
+                Icons.arrow_back_rounded,
+                color: AppColors.textPrimary,
+                size: 20,
               ),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
               "Notifications",
-              style: AppTypography.pageTitle.copyWith(fontSize: 20),
+              style: AppTypography.pageTitle.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             actions: [
               if (data.hasUnreadNotifications)
@@ -41,35 +81,32 @@ class NotificationsScreen extends StatelessWidget {
                   child: Text(
                     "Mark all as read",
                     style: AppTypography.label.copyWith(
-                      color: AppColors.primaryRed,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
                   ),
                 ),
               const SizedBox(width: 8),
             ],
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(1),
+              child: Divider(color: AppColors.border, height: 1),
+            ),
           ),
           body: notifications.isEmpty
               ? _buildEmptyState()
               : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   itemCount: notifications.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final item = notifications[index];
                     return FadeSlideTransition(
-                      delay: Duration(milliseconds: index * 60),
+                      delay: Duration(milliseconds: 40 * index),
                       child: _NotificationCardItem(
                         item: item,
-                        onTap: () {
-                          data.markNotificationAsRead(item.id);
-                          Navigator.of(context).push(
-                            AppPageRoute.create(
-                              NotificationDetailsScreen(notification: item),
-                            ),
-                          );
-                        },
+                        onTap: () => _handleNotificationTap(context, item),
                       ),
                     );
                   },
@@ -87,24 +124,24 @@ class NotificationsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 72,
-              height: 72,
+              width: 64,
+              height: 64,
               decoration: const BoxDecoration(
-                color: AppColors.surfaceGray,
+                color: AppColors.white,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.notifications_off_outlined,
-                color: AppColors.mediumGray,
+                Icons.notifications_none_rounded,
+                color: AppColors.textMuted,
                 size: 32,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Text(
               "You're all caught up!",
               style: AppTypography.cardTitle.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 6),
@@ -137,19 +174,17 @@ class _NotificationCardItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isUnread ? const Color(0xFFFEF2F2) : AppColors.white,
+          color: isUnread ? AppColors.primaryLight.withAlpha(120) : AppColors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isUnread
-                ? AppColors.primaryRed.withAlpha(50)
-                : AppColors.borderGray,
+            color: isUnread ? AppColors.primary.withAlpha(60) : AppColors.border,
             width: isUnread ? 1.2 : 1.0,
           ),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: AppColors.cardShadow,
               blurRadius: 6,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -157,20 +192,15 @@ class _NotificationCardItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 38,
-              height: 38,
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isUnread
-                    ? AppColors.primaryRed.withAlpha(25)
-                    : AppColors.surfaceGray,
-                shape: BoxShape.circle,
+                color: isUnread ? AppColors.primaryLight : AppColors.surfaceGray,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: Icon(
-                  item.icon,
-                  color: isUnread ? AppColors.primaryRed : AppColors.mediumGray,
-                  size: 18,
-                ),
+              child: Icon(
+                _getNotificationIcon(item.title),
+                color: isUnread ? AppColors.primary : AppColors.textSecondary,
+                size: 20,
               ),
             ),
             const SizedBox(width: 12),
@@ -179,6 +209,7 @@ class _NotificationCardItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
@@ -186,76 +217,49 @@ class _NotificationCardItem extends StatelessWidget {
                           style: AppTypography.cardTitle.copyWith(
                             fontSize: 14,
                             fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
-                            color: AppColors.black,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isUnread)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(left: 6),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ),
-                      Text(
-                        item.timestamp,
-                        style: AppTypography.label.copyWith(
-                          fontSize: 11,
-                          color: isUnread
-                              ? AppColors.primaryRed
-                              : AppColors.mediumGray,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     item.message,
-                    style: AppTypography.bodySecondary.copyWith(
-                      fontSize: 12.5,
-                      color: isUnread ? AppColors.black : AppColors.mediumGray,
-                      height: 1.3,
-                    ),
+                    style: AppTypography.bodySecondary.copyWith(fontSize: 12.5),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  if (item.subTitle != null && item.subTitle!.isNotEmpty) ...[
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.folder_outlined,
-                          size: 11,
-                          color: isUnread
-                              ? AppColors.primaryRed.withAlpha(180)
-                              : AppColors.lightGray,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            item.subTitle!,
-                            style: AppTypography.label.copyWith(
-                              fontSize: 11,
-                              color: isUnread
-                                  ? AppColors.primaryRed.withAlpha(200)
-                                  : AppColors.lightGray,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    item.timestamp,
+                    style: AppTypography.label.copyWith(fontSize: 10.5, color: AppColors.textMuted),
+                  ),
                 ],
               ),
             ),
-            if (isUnread) ...[
-              const SizedBox(width: 8),
-              Container(
-                width: 7,
-                height: 7,
-                margin: const EdgeInsets.only(top: 4),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryRed,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
           ],
         ),
       ),
     );
+  }
+
+  IconData _getNotificationIcon(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('task')) return Icons.assignment_outlined;
+    if (t.contains('project')) return Icons.folder_open_rounded;
+    if (t.contains('employee')) return Icons.person_outline_rounded;
+    return Icons.notifications_none_rounded;
   }
 }

@@ -6,30 +6,31 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.white,
-      primaryColor: AppColors.primaryRed,
+      scaffoldBackgroundColor: AppColors.background,
+      primaryColor: AppColors.primary,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.primaryRed,
-        surface: AppColors.white,
-        onSurface: AppColors.black,
-        error: AppColors.primaryRed,
+        primary: AppColors.primary,
+        surface: AppColors.surface,
+        onSurface: AppColors.textPrimary,
+        error: AppColors.danger,
       ),
       applyElevationOverlayColor: false,
       dividerTheme: const DividerThemeData(
-        color: AppColors.borderGray,
+        color: AppColors.border,
         thickness: 1,
         space: 1,
       ),
       textTheme: GoogleFonts.dmSansTextTheme(),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(70, 34),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: AppColors.primaryRed,
+          minimumSize: const Size(70, 36),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
+          elevation: 0,
           textStyle: GoogleFonts.sora(
-            fontSize: 12.5,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
           ),
@@ -37,13 +38,13 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(70, 34),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          side: const BorderSide(color: AppColors.borderGray, width: 1.5),
-          foregroundColor: AppColors.black,
+          minimumSize: const Size(70, 36),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          side: const BorderSide(color: AppColors.border, width: 1.2),
+          foregroundColor: AppColors.textPrimary,
           textStyle: GoogleFonts.sora(
-            fontSize: 12.5,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
           ),
@@ -53,7 +54,7 @@ class AppTheme {
         style: TextButton.styleFrom(
           minimumSize: const Size(56, 30),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          foregroundColor: AppColors.primaryRed,
+          foregroundColor: AppColors.primary,
           textStyle: GoogleFonts.sora(
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
@@ -61,10 +62,10 @@ class AppTheme {
         ),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: IconThemeData(color: AppColors.black),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
     );
   }

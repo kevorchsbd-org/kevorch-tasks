@@ -108,14 +108,14 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                             style: AppTypography.label.copyWith(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.primaryRed,
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(width: 2),
                           const Icon(
                             Icons.arrow_forward_rounded,
                             size: 11,
-                            color: AppColors.primaryRed,
+                            color: AppColors.primary,
                           ),
                         ],
                       ),
@@ -130,7 +130,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                   style: AppTypography.summaryNumber.copyWith(
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.black,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -138,7 +138,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                   'Projects Assigned',
                   style: AppTypography.bodySecondary.copyWith(
                     fontSize: 13,
-                    color: AppColors.mediumGray,
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -152,7 +152,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                       style: AppTypography.body.copyWith(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.darkGray,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     Text(
@@ -160,7 +160,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                       style: AppTypography.label.copyWith(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.black,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -172,7 +172,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                   width: double.infinity,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: AppColors.border,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: totalProjects == 0
@@ -188,7 +188,7 @@ class EmployeeProjectSnapshot extends StatelessWidget {
                                 child: Container(
                                   height: 5,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFDC2626),
+                                    color: AppColors.primary,
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                 ),

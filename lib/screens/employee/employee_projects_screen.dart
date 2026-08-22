@@ -23,6 +23,7 @@ class EmployeeProjectsScreen extends StatefulWidget {
 class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  String _selectedDomain = 'All';
 
   @override
   void dispose() {
@@ -37,7 +38,14 @@ class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
       builder: (context, _) {
         final provider = DummyDataProvider();
         final myProjects = provider.getProjectsByEmployee(widget.loggedInEmployee.employeeName);
+
+        // Collect unique domains
+        final domains = ['All', ...{...myProjects.map((p) => p.domain)}];
+
         final filteredProjects = myProjects.where((p) {
+          final matchesDomain = _selectedDomain == 'All' || p.domain.toLowerCase() == _selectedDomain.toLowerCase();
+          if (!matchesDomain) return false;
+
           if (_searchQuery.trim().isEmpty) return true;
           final query = _searchQuery.trim().toLowerCase();
           return p.projectName.toLowerCase().contains(query) ||
@@ -46,17 +54,37 @@ class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
         }).toList();
 
         return Scaffold(
-          backgroundColor: AppColors.white,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
-            title: Text(
-              "My Projects",
-              style: AppTypography.pageTitle.copyWith(fontSize: 22),
+            title: Row(
+              children: [
+                Text(
+                  "My Projects",
+                  style: AppTypography.pageTitle.copyWith(fontSize: 20),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    "${myProjects.length}",
+                    style: AppTypography.label.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
             bottom: const PreferredSize(
               preferredSize: Size.fromHeight(1),
-              child: Divider(color: AppColors.borderGray, height: 1),
+              child: Divider(color: AppColors.border, height: 1),
             ),
           ),
           body: Padding(
@@ -76,7 +104,49 @@ class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
+
+                // Domain Filter Chips
+                if (domains.length > 2) ...[
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: domains.map((domain) {
+                        final isSelected = _selectedDomain == domain;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(domain),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                _selectedDomain = domain;
+                              });
+                            },
+                            backgroundColor: AppColors.white,
+                            selectedColor: AppColors.primary,
+                            labelStyle: TextStyle(
+                              color: isSelected ? AppColors.white : AppColors.textPrimary,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                color: isSelected ? AppColors.primary : AppColors.border,
+                              ),
+                            ),
+                            showCheckmark: false,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ] else
+                  const SizedBox(height: 4),
+
+                // Project Cards List
                 Expanded(
                   child: filteredProjects.isEmpty
                       ? Center(
@@ -86,25 +156,25 @@ class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: const BoxDecoration(
-                                  color: AppColors.surfaceGray,
+                                  color: AppColors.white,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.folder_off_outlined,
-                                  size: 40,
-                                  color: AppColors.lightGray,
+                                  size: 38,
+                                  color: AppColors.textMuted,
                                 ),
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                "No projects assigned yet",
+                                "No projects found",
                                 style: AppTypography.cardTitle.copyWith(fontSize: 16),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                _searchQuery.isNotEmpty
-                                    ? "No projects matching \"$_searchQuery\""
-                                    : "Projects assigned to you by Admin will appear here",
+                                _searchQuery.isNotEmpty || _selectedDomain != 'All'
+                                    ? "Try refining your search or filter"
+                                    : "Projects assigned by Admin will appear here",
                                 style: AppTypography.bodySecondary,
                                 textAlign: TextAlign.center,
                               ),
@@ -117,7 +187,7 @@ class _EmployeeProjectsScreenState extends State<EmployeeProjectsScreen> {
                           itemBuilder: (context, index) {
                             final project = filteredProjects[index];
                             return FadeSlideTransition(
-                              delay: Duration(milliseconds: 70 * index),
+                              delay: Duration(milliseconds: 60 * index),
                               child: EmployeeProjectCard(
                                 project: project,
                                 onTap: () {

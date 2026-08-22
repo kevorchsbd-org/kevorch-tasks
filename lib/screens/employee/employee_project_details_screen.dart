@@ -169,11 +169,11 @@ class _EmployeeProjectDetailsScreenState
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.primaryRedLight.withAlpha(128)
+                              ? AppColors.primaryLight
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isSelected ? AppColors.primaryRed : Colors.transparent,
+                            color: isSelected ? AppColors.primary : Colors.transparent,
                             width: 1.2,
                           ),
                         ),
@@ -182,7 +182,7 @@ class _EmployeeProjectDetailsScreenState
                           style: AppTypography.label.copyWith(
                             fontSize: 13,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                            color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
                           ),
                         ),
                       ),

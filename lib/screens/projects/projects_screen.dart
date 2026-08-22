@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -6,7 +5,6 @@ import '../../core/animations/app_animations.dart';
 import '../../data/dummy_data.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/project_card.dart';
-import '../../widgets/primary_button.dart';
 import 'create_project_modal.dart';
 import 'project_details_screen.dart';
 
@@ -19,6 +17,7 @@ class ProjectsScreen extends StatefulWidget {
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
   String _searchQuery = "";
+  String _selectedDomain = "All";
 
   @override
   Widget build(BuildContext context) {
@@ -26,30 +25,35 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       animation: DummyDataProvider(),
       builder: (context, _) {
         final data = DummyDataProvider();
+        final domains = ["All", ...data.projects.map((p) => p.domain).toSet()];
+
         final filteredProjects = data.projects.where((p) {
           final q = _searchQuery.toLowerCase();
-          return p.projectName.toLowerCase().contains(q) ||
+          final matchesQuery = p.projectName.toLowerCase().contains(q) ||
               p.collegeName.toLowerCase().contains(q) ||
               p.domain.toLowerCase().contains(q) ||
               (p.assignedEmployee != null &&
                   p.assignedEmployee!.toLowerCase().contains(q));
+          final matchesDomain = _selectedDomain == "All" || p.domain == _selectedDomain;
+          return matchesQuery && matchesDomain;
         }).toList();
 
         return Scaffold(
+          backgroundColor: AppColors.background,
           appBar: const CustomAppBar(title: "Projects"),
           floatingActionButton: SizedBox(
-            height: 34,
+            height: 40,
             child: FloatingActionButton.extended(
               heroTag: 'projects_fab',
               onPressed: () => CreateProjectModal.show(context),
-              backgroundColor: AppColors.primaryRed,
-              elevation: 3,
-              extendedPadding: const EdgeInsets.symmetric(horizontal: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              icon: const Icon(Icons.add_rounded, color: AppColors.white, size: 14),
+              backgroundColor: AppColors.primary,
+              elevation: 4,
+              extendedPadding: const EdgeInsets.symmetric(horizontal: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              icon: const Icon(Icons.add_rounded, color: AppColors.white, size: 18),
               label: Text(
                 "Create Project",
-                style: AppTypography.button.copyWith(fontSize: 11.5, fontWeight: FontWeight.w600),
+                style: AppTypography.button.copyWith(fontSize: 12.5, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -58,14 +62,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Total Projects Summary Badge Header
+                // Header Metrics & Search Bar
                 Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.borderGray),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
                     boxShadow: const [
                       BoxShadow(
                         color: AppColors.cardShadow,
@@ -76,34 +79,16 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
                   child: Row(
                     children: [
-                      // Subtle Glassmorphism Project Layers Icon Container
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                          child: Container(
-                            padding: const EdgeInsets.all(8.5),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryRed.withAlpha(20),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: AppColors.primaryRed.withAlpha(51),
-                                width: 1.0,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primaryRed.withAlpha(13),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.layers_outlined,
-                              color: AppColors.primaryRed,
-                              size: 18,
-                            ),
-                          ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.folder_open_rounded,
+                          color: AppColors.primary,
+                          size: 22,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -112,85 +97,120 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         children: [
                           Text(
                             "Total Projects",
-                            style: AppTypography.label.copyWith(fontSize: 12),
+                            style: AppTypography.label.copyWith(fontSize: 11.5, color: AppColors.textSecondary),
                           ),
                           Text(
                             "${data.totalProjects}",
-                            style: AppTypography.summaryNumber.copyWith(fontSize: 20),
+                            style: AppTypography.summaryNumber.copyWith(fontSize: 22, height: 1.1),
                           ),
                         ],
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          "${data.projects.length} Active",
+                          style: AppTypography.label.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
 
-                // Search Bar
+                const SizedBox(height: 12),
+
+                // Search Box
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceGray,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderGray),
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: TextField(
                     onChanged: (val) => setState(() => _searchQuery = val),
+                    style: AppTypography.body.copyWith(fontSize: 13.5),
                     decoration: InputDecoration(
-                      hintText: "Search by project name, college, domain or assignee...",
-                      hintStyle: AppTypography.bodySecondary,
+                      hintText: "Search projects, colleges or leads...",
+                      hintStyle: AppTypography.bodySecondary.copyWith(fontSize: 13),
                       border: InputBorder.none,
-                      icon: const Icon(Icons.search_rounded, color: AppColors.mediumGray),
+                      icon: const Icon(Icons.search_rounded, color: AppColors.textSecondary, size: 20),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "All Projects (${filteredProjects.length})",
-                      style: AppTypography.sectionTitle.copyWith(fontSize: 18),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 12),
+
+                // Domain Filter Chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: domains.map((domain) {
+                      final isSelected = _selectedDomain == domain;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(domain),
+                          selected: isSelected,
+                          selectedColor: AppColors.primaryLight,
+                          checkmarkColor: AppColors.primary,
+                          backgroundColor: AppColors.white,
+                          side: BorderSide(
+                            color: isSelected ? AppColors.primary : AppColors.border,
+                          ),
+                          labelStyle: AppTypography.label.copyWith(
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          ),
+                          onSelected: (_) {
+                            setState(() {
+                              _selectedDomain = domain;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // Projects List
                 Expanded(
                   child: filteredProjects.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.folder_off_outlined,
-                                size: 56,
-                                color: AppColors.lightGray,
-                              ),
+                              const Icon(Icons.folder_off_outlined, size: 40, color: AppColors.textMuted),
                               const SizedBox(height: 12),
-                              Text(
-                                "No projects found",
-                                style: AppTypography.cardTitle,
-                              ),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: 180,
-                                child: PrimaryButton(
-                                  text: "Create Project",
-                                  onPressed: () => CreateProjectModal.show(context),
-                                ),
-                              ),
+                              Text("No projects found", style: AppTypography.cardTitle.copyWith(fontSize: 15)),
+                              const SizedBox(height: 4),
+                              Text("Try adjusting your search or domain filter", style: AppTypography.bodySecondary),
                             ],
                           ),
                         )
-                      : ListView.builder(
+                      : ListView.separated(
+                          padding: const EdgeInsets.only(bottom: 80),
                           itemCount: filteredProjects.length,
+                          separatorBuilder: (context, index) => const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final project = filteredProjects[index];
                             return FadeSlideTransition(
-                              delay: Duration(milliseconds: index * 80),
+                              delay: Duration(milliseconds: 40 * index),
                               child: ProjectCard(
                                 project: project,
                                 onTap: () {
-                                  Navigator.of(context).push(
+                                  Navigator.push(
+                                    context,
                                     AppPageRoute.create(
                                       ProjectDetailsScreen(projectId: project.id),
                                     ),

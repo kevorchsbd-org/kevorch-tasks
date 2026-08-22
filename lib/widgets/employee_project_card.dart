@@ -14,8 +14,32 @@ class EmployeeProjectCard extends StatelessWidget {
     required this.onTap,
   });
 
+  double _getProjectProgress(String status) {
+    switch (status.toUpperCase()) {
+      case ProjectStatus.assigned:
+        return 0.15;
+      case ProjectStatus.inProgress:
+        return 0.40;
+      case ProjectStatus.phase1Review:
+        return 0.65;
+      case ProjectStatus.rework:
+        return 0.50;
+      case ProjectStatus.testing:
+        return 0.85;
+      case ProjectStatus.closure:
+        return 0.95;
+      case ProjectStatus.completed:
+        return 1.0;
+      default:
+        return 0.30;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final progress = _getProjectProgress(project.status);
+    final isCompleted = project.status == ProjectStatus.completed;
+
     return ScaleTapWidget(
       onTap: onTap,
       child: Container(
@@ -23,7 +47,7 @@ class EmployeeProjectCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderGray, width: 1.0),
+          border: Border.all(color: AppColors.border, width: 1.0),
           boxShadow: const [
             BoxShadow(
               color: AppColors.cardShadow,
@@ -39,16 +63,18 @@ class EmployeeProjectCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceGray,
+                    color: isCompleted ? AppColors.successLight : AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderGray, width: 0.8),
                   ),
-                  child: const Icon(
-                    Icons.folder_outlined,
-                    color: AppColors.primaryRed,
-                    size: 22,
+                  child: Center(
+                    child: Icon(
+                      Icons.folder_open_rounded,
+                      color: isCompleted ? AppColors.success : AppColors.primary,
+                      size: 20,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -59,8 +85,8 @@ class EmployeeProjectCard extends StatelessWidget {
                       Text(
                         project.projectName,
                         style: AppTypography.cardTitle.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -69,16 +95,16 @@ class EmployeeProjectCard extends StatelessWidget {
                       Row(
                         children: [
                           const Icon(
-                            Icons.school_outlined,
-                            size: 14,
-                            color: AppColors.mediumGray,
+                            Icons.business_rounded,
+                            size: 13,
+                            color: AppColors.textMuted,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               project.collegeName,
                               style: AppTypography.bodySecondary.copyWith(
-                                fontSize: 13,
+                                fontSize: 12.5,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -90,50 +116,93 @@ class EmployeeProjectCard extends StatelessWidget {
                   ),
                 ),
                 const Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.lightGray,
-                  size: 20,
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.textMuted,
+                  size: 14,
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            const Divider(color: AppColors.borderGray, height: 1),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
+            // Domain chip and status badge row
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceGray,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.borderGray, width: 0.8),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.border, width: 0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.code_rounded, size: 12, color: AppColors.textSecondary),
+                      const SizedBox(width: 4),
+                      Text(
+                        project.domain,
+                        style: AppTypography.label.copyWith(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: isCompleted ? AppColors.successLight : AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    project.domain,
-                    style: AppTypography.label.copyWith(
-                      fontSize: 11,
-                      color: AppColors.darkGray,
+                    ProjectStatus.getLabel(project.status),
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: isCompleted ? AppColors.success : AppColors.primary,
                     ),
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            // Progress meter bar
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 13,
-                      color: AppColors.mediumGray,
-                    ),
-                    const SizedBox(width: 4),
                     Text(
-                      project.assignedDate != null
-                          ? '${project.assignedDate!.day} ${const ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][project.assignedDate!.month]} ${project.assignedDate!.year}'
-                          : project.createdDate,
-                      style: AppTypography.bodySecondary.copyWith(
-                        fontSize: 12,
+                      "Progress",
+                      style: AppTypography.label.copyWith(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                    Text(
+                      "${(progress * 100).toInt()}%",
+                      style: AppTypography.label.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 5,
+                    backgroundColor: AppColors.surfaceGray,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isCompleted ? AppColors.success : AppColors.primary,
+                    ),
+                  ),
                 ),
               ],
             ),

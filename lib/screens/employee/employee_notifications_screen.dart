@@ -63,12 +63,12 @@ class EmployeeNotificationsScreen extends StatelessWidget {
         final hasUnread = provider.hasUnreadEmployeeNotifications(loggedInEmployee.id);
 
         return Scaffold(
-          backgroundColor: AppColors.white,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: AppColors.black),
+              icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
@@ -82,15 +82,15 @@ class EmployeeNotificationsScreen extends StatelessWidget {
                   child: Text(
                     "Mark all read",
                     style: AppTypography.label.copyWith(
-                      color: AppColors.primaryRed,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
             ],
             bottom: const PreferredSize(
               preferredSize: Size.fromHeight(1),
-              child: Divider(color: AppColors.borderGray, height: 1),
+              child: Divider(color: AppColors.border, height: 1),
             ),
           ),
           body: notifications.isEmpty
@@ -103,13 +103,13 @@ class EmployeeNotificationsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: const BoxDecoration(
-                            color: AppColors.surfaceGray,
+                            color: AppColors.white,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.notifications_none_rounded,
                             size: 40,
-                            color: AppColors.lightGray,
+                            color: AppColors.textMuted,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -134,7 +134,7 @@ class EmployeeNotificationsScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final item = notifications[index];
                     return FadeSlideTransition(
-                      delay: Duration(milliseconds: 60 * index),
+                      delay: Duration(milliseconds: 50 * index),
                       child: EmployeeNotificationCard(
                         notification: item,
                         onTap: () => _handleNotificationTap(context, item),

@@ -5,6 +5,7 @@ import '../../core/animations/app_animations.dart';
 import '../../data/dummy_data.dart';
 import '../../data/models.dart';
 import '../../widgets/task_status_badge.dart';
+import '../../widgets/priority_badge.dart';
 import '../../widgets/custom_text_field.dart';
 import 'employee_task_details_screen.dart';
 
@@ -27,10 +28,10 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
 
   final List<String> _statusFilters = [
     'All',
+    'TO DO',
     'IN PROGRESS',
     'REVIEW',
     'REWORK',
-    'TESTING',
     'DONE',
   ];
 
@@ -63,17 +64,37 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
         }).toList();
 
         return Scaffold(
-          backgroundColor: AppColors.white,
+          backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
-            title: Text(
-              "My Tasks",
-              style: AppTypography.pageTitle.copyWith(fontSize: 22),
+            title: Row(
+              children: [
+                Text(
+                  "My Tasks",
+                  style: AppTypography.pageTitle.copyWith(fontSize: 20),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    "${myTasks.length}",
+                    style: AppTypography.label.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
             bottom: const PreferredSize(
               preferredSize: Size.fromHeight(1),
-              child: Divider(color: AppColors.borderGray, height: 1),
+              child: Divider(color: AppColors.border, height: 1),
             ),
           ),
           body: Padding(
@@ -93,7 +114,7 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
                 // Status Filter Chips
                 SingleChildScrollView(
@@ -111,17 +132,17 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                               _selectedStatus = status;
                             });
                           },
-                          backgroundColor: AppColors.surfaceGray,
-                          selectedColor: AppColors.primaryRed,
+                          backgroundColor: AppColors.white,
+                          selectedColor: AppColors.primary,
                           labelStyle: TextStyle(
-                            color: isSelected ? AppColors.white : AppColors.darkGray,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            color: isSelected ? AppColors.white : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                             fontSize: 12,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
-                              color: isSelected ? AppColors.primaryRed : AppColors.borderGray,
+                              color: isSelected ? AppColors.primary : AppColors.border,
                             ),
                           ),
                           showCheckmark: false,
@@ -142,13 +163,13 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: const BoxDecoration(
-                                  color: AppColors.surfaceGray,
+                                  color: AppColors.white,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.assignment_turned_in_outlined,
-                                  size: 40,
-                                  color: AppColors.lightGray,
+                                  size: 38,
+                                  color: AppColors.textMuted,
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -173,7 +194,7 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
                             return FadeSlideTransition(
-                              delay: Duration(milliseconds: 60 * index),
+                              delay: Duration(milliseconds: 50 * index),
                               child: ScaleTapWidget(
                                 onTap: () {
                                   Navigator.push(
@@ -191,7 +212,7 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                                   decoration: BoxDecoration(
                                     color: AppColors.white,
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: AppColors.borderGray, width: 1),
+                                    border: Border.all(color: AppColors.border, width: 1),
                                     boxShadow: const [
                                       BoxShadow(
                                         color: AppColors.cardShadow,
@@ -211,6 +232,7 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                                               task.taskTitle,
                                               style: AppTypography.cardTitle.copyWith(
                                                 fontSize: 15,
+                                                fontWeight: FontWeight.w700,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -220,52 +242,46 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                                           TaskStatusBadge(status: task.status),
                                         ],
                                       ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        task.taskDescription,
-                                        style: AppTypography.bodySecondary.copyWith(
-                                          fontSize: 13,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          PriorityBadge(priority: widget.loggedInEmployee.priority),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.surfaceGray,
+                                              borderRadius: BorderRadius.circular(6),
+                                              border: Border.all(color: AppColors.border, width: 0.8),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.folder_outlined, size: 12, color: AppColors.textSecondary),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  task.projectType,
+                                                  style: AppTypography.label.copyWith(
+                                                    fontSize: 11,
+                                                    color: AppColors.textPrimary,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(height: 12),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 3,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.surfaceGray,
-                                                borderRadius: BorderRadius.circular(6),
-                                                border: Border.all(
-                                                  color: AppColors.borderGray,
-                                                  width: 0.8,
-                                                ),
-                                              ),
-                                              child: Text(
-                                                "${task.projectType} • ${task.taskType}",
-                                                style: AppTypography.label.copyWith(
-                                                  fontSize: 11,
-                                                  color: AppColors.darkGray,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
                                           Row(
-                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               const Icon(
                                                 Icons.event_outlined,
                                                 size: 13,
-                                                color: AppColors.mediumGray,
+                                                color: AppColors.textMuted,
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
@@ -273,6 +289,24 @@ class _EmployeeTasksScreenState extends State<EmployeeTasksScreen> {
                                                 style: AppTypography.bodySecondary.copyWith(
                                                   fontSize: 12,
                                                 ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Open",
+                                                style: AppTypography.label.copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 2),
+                                              const Icon(
+                                                Icons.arrow_forward_rounded,
+                                                size: 13,
+                                                color: AppColors.primary,
                                               ),
                                             ],
                                           ),

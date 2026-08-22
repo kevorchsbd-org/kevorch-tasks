@@ -21,10 +21,10 @@ class EmployeeNotificationCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: notification.isRead ? AppColors.white : AppColors.primaryRedLight.withAlpha(40),
+          color: notification.isRead ? AppColors.white : AppColors.primaryLight.withAlpha(90),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: notification.isRead ? AppColors.borderGray : AppColors.primaryRed.withAlpha(60),
+            color: notification.isRead ? AppColors.border : AppColors.primary.withAlpha(80),
             width: 1.0,
           ),
           boxShadow: const [
@@ -41,13 +41,13 @@ class EmployeeNotificationCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(9),
               decoration: BoxDecoration(
-                color: notification.isRead ? AppColors.surfaceGray : AppColors.primaryRedLight,
+                color: notification.isRead ? AppColors.surfaceGray : AppColors.primaryLight,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 notification.icon,
                 size: 18,
-                color: notification.isRead ? AppColors.mediumGray : AppColors.primaryRed,
+                color: notification.isRead ? AppColors.textSecondary : AppColors.primary,
               ),
             ),
             const SizedBox(width: 12),
@@ -82,7 +82,7 @@ class EmployeeNotificationCard extends StatelessWidget {
                     notification.message,
                     style: AppTypography.body.copyWith(
                       fontSize: 13,
-                      color: AppColors.darkGray,
+                      color: AppColors.textPrimary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -94,13 +94,13 @@ class EmployeeNotificationCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.surfaceGray,
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.borderGray, width: 0.8),
+                        border: Border.all(color: AppColors.border, width: 0.8),
                       ),
                       child: Text(
                         notification.subTitle!,
                         style: AppTypography.label.copyWith(
                           fontSize: 11,
-                          color: AppColors.mediumGray,
+                          color: AppColors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -117,7 +117,7 @@ class EmployeeNotificationCard extends StatelessWidget {
                 height: 8,
                 margin: const EdgeInsets.only(top: 6),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryRed,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
               ),

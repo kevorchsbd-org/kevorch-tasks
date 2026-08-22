@@ -16,8 +16,8 @@ class EmployeeBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       {'icon': Icons.grid_view_rounded, 'label': 'Dashboard'},
-      {'icon': Icons.folder_open_rounded, 'label': 'My Projects'},
-      {'icon': Icons.assignment_outlined, 'label': 'My Tasks'},
+      {'icon': Icons.folder_open_rounded, 'label': 'Projects'},
+      {'icon': Icons.assignment_outlined, 'label': 'Tasks'},
       {'icon': Icons.person_outline_rounded, 'label': 'Profile'},
     ];
 
@@ -25,10 +25,10 @@ class EmployeeBottomNavBar extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(
-          top: BorderSide(color: AppColors.borderGray, width: 1.0),
+          top: BorderSide(color: AppColors.border, width: 1.0),
         ),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: SafeArea(
         child: Row(
           children: List.generate(items.length, (index) {
@@ -40,29 +40,31 @@ class EmployeeBottomNavBar extends StatelessWidget {
                 onTap: () => onTap(index),
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.primaryRedLight.withAlpha(128)
+                        ? AppColors.primaryLight
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         item['icon'] as IconData,
-                        color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
-                        size: 22,
+                        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                        size: 21,
                       ),
                       const SizedBox(height: 3),
                       Text(
                         item['label'] as String,
                         style: AppTypography.navigation.copyWith(
                           fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

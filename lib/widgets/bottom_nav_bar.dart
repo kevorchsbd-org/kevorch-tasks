@@ -26,7 +26,7 @@ class CustomBottomNavBar extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(
-          top: BorderSide(color: AppColors.borderGray, width: 1.0),
+          top: BorderSide(color: AppColors.border, width: 1.0),
         ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -44,17 +44,15 @@ class CustomBottomNavBar extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primaryRedLight.withAlpha(128)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
+                    color: isSelected ? AppColors.primaryLight : Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         item['icon'] as IconData,
-                        color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
+                        color: isSelected ? AppColors.primary : AppColors.textSecondary,
                         size: 22,
                       ),
                       const SizedBox(height: 3),
@@ -62,8 +60,8 @@ class CustomBottomNavBar extends StatelessWidget {
                         item['label'] as String,
                         style: AppTypography.navigation.copyWith(
                           fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          color: isSelected ? AppColors.primaryRed : AppColors.mediumGray,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
