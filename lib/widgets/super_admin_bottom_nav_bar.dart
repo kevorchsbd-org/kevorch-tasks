@@ -16,7 +16,6 @@ class SuperAdminBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       {'icon': Icons.grid_view_rounded, 'label': 'Dashboard'},
-      {'icon': Icons.admin_panel_settings_outlined, 'label': 'Admins'},
       {'icon': Icons.folder_open_rounded, 'label': 'Projects'},
       {'icon': Icons.people_outline_rounded, 'label': 'Employees'},
       {'icon': Icons.assignment_outlined, 'label': 'Tasks'},

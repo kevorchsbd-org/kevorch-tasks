@@ -257,27 +257,29 @@ class SuperAdminOperationsPulse extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'OPERATIONS PULSE',
-                          style: AppTypography.label.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.black,
-                            letterSpacing: 0.8,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'OPERATIONS PULSE',
+                            style: AppTypography.label.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.black,
+                              letterSpacing: 0.8,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'What needs your attention right now',
-                          style: AppTypography.bodySecondary.copyWith(
-                            fontSize: 12,
-                            color: const Color(0xFF8A8F9C),
+                          const SizedBox(height: 2),
+                          Text(
+                            'What needs your attention right now',
+                            style: AppTypography.bodySecondary.copyWith(
+                              fontSize: 12,
+                              color: const Color(0xFF8A8F9C),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

@@ -31,6 +31,18 @@
 
   <title>admin_project_management</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+    // Prevent Flutter Web engine removeChild null reference exception during DOM teardown/initialization
+    (function() {
+      var originalRemoveChild = Node.prototype.removeChild;
+      Node.prototype.removeChild = function(child) {
+        if (child && child.parentNode === this) {
+          return originalRemoveChild.call(this, child);
+        }
+        return child;
+      };
+    })();
+  </script>
 </head>
 <body>
   <!--

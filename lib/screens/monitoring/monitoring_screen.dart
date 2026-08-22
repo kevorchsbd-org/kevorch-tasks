@@ -32,71 +32,6 @@ class MonitoringScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FadeSlideTransition(
-                  delay: const Duration(milliseconds: 100),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.black,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryRed,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.verified_user_rounded,
-                                color: AppColors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "System Health & Status",
-                                    style: AppTypography.cardTitle.copyWith(
-                                      color: AppColors.white,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    "Live Realtime Monitoring Dashboard",
-                                    style: AppTypography.bodySecondary.copyWith(
-                                      color: AppColors.lightGray,
-                                      fontSize: 12,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        const Divider(color: AppColors.darkGray),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(child: _buildStatusMetric("Active Nodes", "100%", AppColors.successGreen)),
-                            Expanded(child: _buildStatusMetric("Pending Tasks", "${data.totalTasks}", AppColors.primaryRed)),
-                            Expanded(child: _buildStatusMetric("Team Utilization", "88%", AppColors.white)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   "Monitoring Breakdown",
                   style: AppTypography.sectionTitle.copyWith(fontSize: 18),
@@ -155,30 +90,6 @@ class MonitoringScreen extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildStatusMetric(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTypography.pageTitle.copyWith(
-            color: color,
-            fontSize: 22,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTypography.bodySecondary.copyWith(
-            color: AppColors.lightGray,
-            fontSize: 12,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 

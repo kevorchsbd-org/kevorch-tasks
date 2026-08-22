@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/super_admin_bottom_nav_bar.dart';
 import '../screens/super_admin/super_admin_dashboard_screen.dart';
-import '../screens/super_admin/admin_management_screen.dart';
 import '../screens/projects/projects_screen.dart';
 import '../screens/employees/employees_screen.dart';
 import '../screens/tasks/tasks_screen.dart';
-
 import '../screens/profile/profile_screen.dart';
 import '../core/session/session_roles.dart';
 
@@ -29,7 +27,6 @@ class _SuperAdminNavigationState extends State<SuperAdminNavigation> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       SuperAdminDashboardScreen(onNavigateToTab: _onTabTapped),
-      const AdminManagementScreen(),
       const ProjectsScreen(),
       const EmployeesScreen(),
       const TasksScreen(),

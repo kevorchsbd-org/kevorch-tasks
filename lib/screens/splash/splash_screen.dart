@@ -106,36 +106,29 @@ class _SplashScreenState extends State<SplashScreen>
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: Container(
-                    width: 90,
-                    height: 90,
+                    width: 115,
+                    height: 115,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C1C1E),
+                      color: AppColors.black,
                       borderRadius: BorderRadius.circular(26),
                       border: Border.all(
-                        color: AppColors.primaryRed.withAlpha(90),
-                        width: 1.5,
+                        color: AppColors.primaryRed.withAlpha(130),
+                        width: 1.8,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primaryRed.withAlpha(64),
-                          blurRadius: 30,
+                          color: AppColors.primaryRed.withAlpha(80),
+                          blurRadius: 32,
                           spreadRadius: 2,
                           offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryRed.withAlpha(31),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.bolt_rounded,
-                          color: AppColors.primaryRed,
-                          size: 46,
-                        ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset(
+                        'assets/images/app_logo.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -154,11 +147,11 @@ class _SplashScreenState extends State<SplashScreen>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'KEVORCH',
+                              'KEVORCH SBD',
                               style: AppTypography.pageTitle.copyWith(
-                                fontSize: 26,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 4.5,
+                                letterSpacing: 3.5,
                                 color: AppColors.white,
                               ),
                             ),

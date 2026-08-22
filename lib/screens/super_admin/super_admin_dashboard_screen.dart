@@ -28,7 +28,7 @@ class SuperAdminDashboardScreen extends StatelessWidget {
           backgroundColor: AppColors.white,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 90),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -205,8 +205,8 @@ class SuperAdminDashboardScreen extends StatelessWidget {
                             Expanded(
                               child: _buildActionTile(
                                 context,
-                                title: "System Health & Logs",
-                                subtitle: "View live telemetry",
+                                title: "System Monitoring",
+                                subtitle: "View telemetry breakdown",
                                 icon: Icons.monitor_heart_outlined,
                                 onTap: () {
                                   Navigator.push(

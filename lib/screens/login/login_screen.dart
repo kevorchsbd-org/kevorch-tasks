@@ -139,13 +139,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       delay: const Duration(milliseconds: 100),
                       child: Center(
                         child: Container(
-                          width: 68,
-                          height: 68,
+                          width: 84,
+                          height: 84,
                           decoration: BoxDecoration(
                             color: AppColors.black,
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: AppColors.primaryRed.withAlpha(80),
+                              color: AppColors.primaryRed.withAlpha(120),
                               width: 1.5,
                             ),
                             boxShadow: const [
@@ -156,26 +156,27 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.bolt_rounded,
-                              color: AppColors.primaryRed,
-                              size: 38,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Image.asset(
+                              'assets/images/app_logo.png',
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     FadeSlideTransition(
                       delay: const Duration(milliseconds: 200),
                       child: Column(
                         children: [
                           Text(
-                            "KEVOCH PRO",
+                            "KEVORCH SBD",
                             style: AppTypography.pageTitle.copyWith(
-                              fontSize: 28,
-                              letterSpacing: 0.5,
+                              fontSize: 26,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
                           ),

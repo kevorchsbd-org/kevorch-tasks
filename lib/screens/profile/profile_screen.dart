@@ -6,6 +6,7 @@ import '../../core/session/session_roles.dart';
 import '../../core/session/session_service.dart';
 import '../../data/dummy_data.dart';
 import '../login/login_screen.dart';
+import '../super_admin/admin_management_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String role;
@@ -238,6 +239,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   clipBehavior: Clip.antiAlias,
                   child: Column(
                     children: [
+                      if (widget.role == SessionRoles.superAdmin) ...[
+                        ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminManagementScreen(),
+                              ),
+                            );
+                          },
+                          leading: const Icon(Icons.admin_panel_settings_outlined, color: AppColors.black),
+                          title: Text(
+                            'Admin Management',
+                            style: AppTypography.body.copyWith(fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            'Manage System Administrators & Roles',
+                            style: AppTypography.bodySecondary.copyWith(fontSize: 12),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.mediumGray,
+                          ),
+                        ),
+                        const Divider(height: 1, color: AppColors.borderGray),
+                      ],
                       ListTile(
                         leading: const Icon(Icons.info_outline_rounded, color: AppColors.mediumGray),
                         title: Text(
